@@ -2,111 +2,271 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>CRM – Customer Reviews Management</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+<title>Contable App</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📒</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fff;--panel:#f8f4f3;--card:#db9c9c;--ink:#111;--accent:#1e9bf0;--mute:#8794a8;--line:#222;--btn:#d9d9d9;--cardink:#111;
+:root{--navy:#0f4c75;--blue:#3282b8;--sky:#bbe1fa;--ink:#1b262c;--bg:#f8f8f8;--card:#fff;--grey:#c4c4c4;--mute:#464858;--row:#f1f6fa;--shadow:0 4px 4px rgba(0,0,0,.25);
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171b;--panel:#1f2227;--card:#8a5a5a;--ink:#f2f2f2;--accent:#5ab8ff;--mute:#8e98a8;--line:#ccc;--btn:#3a3d44;--cardink:#fff}}
-:root[data-theme="dark"]{--bg:#15171b;--panel:#1f2227;--card:#8a5a5a;--ink:#f2f2f2;--accent:#5ab8ff;--mute:#8e98a8;--line:#ccc;--btn:#3a3d44;--cardink:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#e8eef2;--bg:#11171b;--card:#1b262c;--mute:#aab4bd;--row:#233039;--grey:#4a565e;--sky:#2a5a7d}}
+:root[data-theme="dark"]{--ink:#e8eef2;--bg:#11171b;--card:#1b262c;--mute:#aab4bd;--row:#233039;--grey:#4a565e;--sky:#2a5a7d}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Poppins,system-ui,sans-serif;font-size:15px}
-.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
-aside{padding:26px 22px;display:flex;flex-direction:column;box-shadow:4px 0 20px rgba(0,0,0,.06)}
-.logo{font-size:30px;color:var(--accent);margin-bottom:56px}
-aside a{color:var(--accent);text-decoration:none;font-weight:500;font-size:14px;padding:12px 8px;border-radius:8px;display:block}
-aside a.on,aside a:hover{background:var(--panel)}
-.tog{margin-top:auto;background:none;border:0;color:var(--mute);font:500 15px Poppins;text-align:left;cursor:pointer;padding:8px}
-main{padding:28px 36px;min-width:0}
-.top{display:flex;justify-content:flex-end;gap:32px;font-weight:500;font-size:14px;margin-bottom:40px}
-.top a{color:var(--ink);text-decoration:none}
-.panel{background:var(--panel);border:1px solid var(--line);padding:22px;min-height:560px}
-h1{font-weight:400;font-size:22px;margin:0 0 24px}
-.bar{display:flex;gap:16px;align-items:center;justify-content:flex-end;flex-wrap:wrap;margin-bottom:18px}
-select,input,textarea{font:inherit;color:var(--ink);background:var(--btn);border:0;padding:9px 12px;border-radius:6px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.col{display:grid;gap:16px;align-content:start}
-.card{background:var(--card);color:var(--cardink);padding:20px 22px;text-transform:uppercase;font-size:17px}
-.card b{display:block;font-weight:400;font-size:22px;margin-top:28px;text-transform:none}
-.btn{background:var(--btn);color:var(--ink);border:0;padding:12px 28px;border-radius:10px;font:500 14px Poppins;cursor:pointer}
-.btn.p{background:var(--accent);color:#fff}
-table{width:100%;border-collapse:collapse}
-th{text-align:left;font-weight:500;padding:10px}
-td{padding:14px 10px}
-tbody tr:nth-child(odd){background:var(--btn)}
-.chips{display:flex;gap:16px;margin-bottom:22px;flex-wrap:wrap}
-.chip{background:var(--btn);padding:8px 26px;border-radius:40px}
-.list{display:grid;gap:14px}
-.item{background:var(--btn);padding:14px 18px;border-radius:8px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.item small{color:var(--mute)}
-.form{max-width:480px;display:grid;gap:14px}
-.form input{padding:16px}
-.login{min-height:100vh;display:grid;place-items:center;padding:20px}
-.login .panel{width:min(560px,100%);min-height:0;padding:36px}
-.chat{display:grid;grid-template-columns:240px 1fr;gap:16px}
-.chat>div{background:var(--btn);padding:14px;border-radius:8px;min-height:400px}
-.msg{padding:8px 12px;border-radius:12px;background:var(--panel);margin:8px 0;max-width:80%}
-.msg.me{margin-left:auto;background:var(--accent);color:#fff}
-.sw{width:46px;height:26px;border-radius:20px;background:var(--btn);border:0;position:relative;cursor:pointer}
-.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
-.sw.on{background:var(--accent)}.sw.on::after{left:23px}
-.sid.hide aside{display:none}
-@media(max-width:820px){.app{grid-template-columns:1fr}aside{flex-direction:row;flex-wrap:wrap;gap:4px;padding:14px}.logo{margin:0 12px 0 0;font-size:24px}.tog{display:none}main{padding:16px}.grid,.chat{grid-template-columns:1fr}.top{margin-bottom:18px}.panel{overflow-x:auto}}
+body{margin:0;font-family:Lato,system-ui,sans-serif;font-weight:700;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit;color:inherit}
+.hide{display:none!important}
+/* layout */
+.app{display:grid;grid-template-columns:325px 1fr;min-height:100vh}
+aside{background:var(--navy);border-top-right-radius:50px;padding:80px 0 40px 35px;color:#fff}
+.logo{font-size:36px;margin:0 0 60px 76px}
+aside a{display:block;color:#fff;text-decoration:none;font-size:18px;padding:30px 0 30px 89px;margin-bottom:-6px;border-radius:50px 0 0 50px}
+aside a.on{background:var(--sky);color:var(--navy)}
+:root[data-theme="dark"] aside a.on,@media (prefers-color-scheme:dark){}
+main{padding:46px 40px 60px 70px;max-width:1115px;width:100%}
+header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:34px;gap:16px}
+h1{font-size:36px;margin:30px 0 0;text-transform:uppercase}
+.user{display:flex;gap:14px;align-items:center}
+.av{width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;display:grid;place-items:center;font-size:20px}
+.user small{display:block;color:var(--navy);font-size:14px}
+:root[data-theme="dark"] .user small{color:var(--sky)}
+.card{background:var(--card);border-radius:25px;box-shadow:var(--shadow);padding:30px 45px}
+.sub{font-size:18px}
+/* home */
+.toggle{display:flex;background:var(--grey);border-radius:50px;padding:3px;gap:0}
+.toggle button{border:0;background:none;border-radius:50px;padding:3px 30px;font-size:18px;cursor:pointer}
+.toggle .on{background:var(--card)}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.stats{display:flex;gap:70px;margin:42px 0 30px}
+.stats div{min-width:94px}.stats b{font-size:24px;display:block;margin-top:2px}
+.stats .a{border-top:5px solid var(--navy);border-radius:50px;padding-top:0}
+.stats span{font-size:18px}
+.chart{position:relative;height:230px;margin-right:45px}
+.grid{position:absolute;inset:0 0 0 0}
+.grid i{position:absolute;left:0;right:0;height:1px;background:var(--grey)}
+.grid em{position:absolute;right:-45px;font-style:normal;font-size:13px;color:var(--mute);transform:translateY(-50%)}
+.bars{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:flex-end;padding:0 4px}
+.bars b{width:30px;background:var(--grey);transition:height .5s;cursor:pointer}
+.bars b.n{background:var(--navy)}.bars b.m{background:var(--blue)}
+.two{display:grid;grid-template-columns:1fr 1.77fr;gap:35px;margin-top:40px}
+.two .card{padding:22px 24px;min-height:246px}
+.two ol,.two ul{list-style:none;margin:18px 0 0;padding:0 0 0 14px;font-size:22px}
+.two li{margin-bottom:14px}
+/* tables */
+.bar{display:flex;justify-content:space-between;align-items:center;margin:0 0 22px;flex-wrap:wrap;gap:12px}
+.btn{background:var(--navy);color:#fff;border:0;border-radius:50px;padding:7px 28px;font-size:18px;cursor:pointer;display:inline-flex;gap:10px;align-items:center}
+.btn.ghost{background:var(--grey);color:#1b262c}
+.btn:hover{background:var(--blue)}
+.tabs{position:relative;display:inline-block}
+.tabs>button{background:var(--sky);border:0;border-radius:12px;padding:8px 18px;font-size:22px;cursor:pointer;color:var(--ink)}
+.menu{position:absolute;top:100%;left:0;background:var(--card);box-shadow:var(--shadow);border-radius:14px;padding:8px;z-index:5;min-width:200px}
+.menu div{padding:8px 12px;cursor:pointer;border-radius:8px;font-size:16px}
+.menu div:hover{background:var(--row)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:separate;border-spacing:0 8px;min-width:640px}
+th{background:var(--sky);padding:14px 20px;text-align:left;font-size:16px;color:#1b262c}
+th:first-child{border-radius:12px 0 0 12px}th:last-child{border-radius:0 12px 12px 0}
+td{background:var(--card);padding:22px 20px;font-size:16px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+td:first-child{border-radius:12px 0 0 12px}td:last-child{border-radius:0 12px 12px 0}
+.ic{border:0;background:none;cursor:pointer;font-size:18px;padding:2px 6px}
+.pill{background:var(--sky);color:#1b262c;padding:2px 12px;border-radius:50px;font-size:14px}
+/* forms */
+.f{display:grid;grid-template-columns:1fr 1fr;gap:20px 50px}
+.f label{display:grid;grid-template-columns:130px 1fr;align-items:center;gap:10px;font-size:16px}
+.f label.w{grid-column:1/-1}
+input,select,textarea{border:1px solid var(--grey);background:var(--card);border-radius:8px;padding:6px 10px;width:100%;font-weight:400}
+.rows input{padding:4px 8px}
+.rows{width:100%;border-collapse:collapse;min-width:720px;margin-top:20px}
+.rows th{border-radius:0}
+.rows td{box-shadow:none;border-bottom:1px solid var(--grey);padding:8px}
+.tot{margin:20px 0 0 auto;width:260px;font-size:16px}
+.tot p{display:flex;justify-content:space-between;margin:8px 0}
+.act{display:flex;justify-content:flex-end;gap:14px;margin-top:30px;flex-wrap:wrap}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:grid;place-items:center;z-index:20;padding:16px}
+.modal .card{width:min(520px,100%)}
+.modal label{display:block;margin:12px 0 4px;font-size:15px}
+/* auth */
+.auth{min-height:100vh;display:grid;place-items:center;padding:24px}
+.auth .card{width:min(500px,100%);padding:50px 55px;text-align:center}
+.auth h2{font-size:20px;margin:0 0 40px}
+.auth input{padding:14px 18px;margin-bottom:20px;border-radius:12px}
+.auth .btn{width:100%;justify-content:center;border-radius:14px;padding:12px;font-size:24px}
+.auth a{color:var(--blue);cursor:pointer;text-decoration:none}
+.demo{background:var(--row);border:1px dashed var(--blue);border-radius:12px;padding:12px 16px;margin:0 0 20px;display:grid;gap:4px;font-size:15px;text-align:left}
+.demo code{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--blue)}
+.demo button{margin-top:6px;border:0;background:var(--sky);color:#1b262c;border-radius:50px;padding:6px 14px;cursor:pointer;font-size:14px}
+/* POS */
+.pos{min-height:100vh;display:flex;flex-direction:column}
+.pos nav{background:var(--navy);color:#fff;padding:26px 50px;font-size:32px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.pos nav a{color:#fff;font-size:16px;text-decoration:none;cursor:pointer}
+.posb{display:grid;grid-template-columns:1.3fr 1fr;flex:1}
+.posb section{padding:28px 40px}
+.posb .r{background:var(--card);box-shadow:-2px 0 6px rgba(0,0,0,.15);display:flex;flex-direction:column}
+.prod{display:flex;justify-content:space-between;align-items:center;background:var(--card);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.2);padding:20px 24px;margin-top:14px;cursor:pointer;gap:12px}
+.prod:hover{background:var(--row)}
+.line{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--grey);font-size:16px;gap:8px}
+.sold{margin-top:auto;display:flex;justify-content:space-between;padding:20px 0;font-size:20px;border-top:3px solid var(--grey)}
+@media(max-width:900px){
+ .app{grid-template-columns:1fr}
+ aside{border-radius:0 0 30px 0;padding:20px 12px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+ .logo{margin:0 20px 0 10px;font-size:26px}
+ aside a{padding:10px 16px;margin:0;border-radius:50px;font-size:14px}
+ main{padding:24px 16px}h1{font-size:26px;margin:0}
+ .card{padding:20px}.stats{gap:30px}.two,.f,.posb{grid-template-columns:1fr}
+ .f label{grid-template-columns:100px 1fr}.chart{margin-right:34px}.bars b{width:5%}
+ .grid em{right:-34px}.pos nav{padding:18px 20px;font-size:24px}
+}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script>
-var NAV=[["dashboard","Dashboard"],["reviews","Customer Review Listing"],["tasks","Task Management"],["chat","Chat"],["settings","Settings"],["support","App Support"]];
-var REV=[["Andy",4.3,"Great app, very smooth","15 May 2022","Apple","Yet To Check"],["Parry",4.1,"Love the new update","21 Jan 2022","Google Store","Checked"],["Ben",3.2,"Needs better search","20 Dec 2021","Apple","In Process"]];
-var TASKS={"Yet to Check":[["Ticket #4301","4.3","15 May 2022"],["Ticket #4288","4.1","12 May 2022"]],"In Process":[["Ticket #4120","3.1","18 Mar 2022"]],"Checked":[["Ticket #4207","4.8","17 Apr 2022"]]};
-var NOTES=[["Unread","New review received","10 mins. ago"],["Unread","Task assigned to you","1 hr. ago"],["Read","Weekly report ready","2 days ago"]];
-var CHATS={Alex:["Hi, any update on the latest reviews?","Alex"],Tracy:["Task #4120 is in process.","Tracy"],Ravi:["Sharing the churn report now.","Ravi"]};
-var USER={id:"12454",name:"Ericson Palaganas",email:"ericson@enterprise.com",role:"Product Manager",loc:"CA"};
-var notifOn=true,editing=false,chatWith="Alex",msgs=[];
-function $(s){return document.querySelector(s)}
-function shell(inner,cur){
-  var nav=NAV.map(function(n){return '<a href="#'+n[0]+'" class="'+(n[0]===cur?'on':'')+'">'+n[1]+'</a>'}).join("");
-  return '<div class="app"><aside><div class="logo">CRM</div>'+nav+'<button class="tog" onclick="document.body.classList.toggle(\'sid\')">Toggle Sidebar</button></aside><main><div class="top"><a href="#notifications">Notifications</a><a href="#profile">Profile</a><a href="#login">Logout</a></div><div class="panel">'+inner+'</div></main></div>';
+const $=(s,r=document)=>r.querySelector(s);
+const fmt=n=>'$'+Number(n).toLocaleString('en-US');
+let range='Month', vtab='Invoices', modal=false, menu=false;
+const contacts=[{n:'Victor Manuel',t:'1122408617',p:'314502365',o:'Frequent customer'},{n:'Good Shoes',t:'running',p:'314502365',o:'Ewdgbsbdf'},{n:'Laura Barahona',t:'1122408617',p:'3145063321',o:'—'}];
+const products=[{r:'12452365441',n:'Website',p:750000},{r:'12452365442',n:'Web service',p:320000},{r:'12452365443',n:'Annual hosting',p:180000}];
+const data={Month:[60,83,192,60,94,42,164,152,124,60,72,113,192],'1 Year':[120,90,210,140,80,170,200,110,95,160,190,130,220],'2 Years':[90,150,130,200,170,110,140,230,180,100,120,210,160]};
+const hl={Month:{2:'n',6:'m',7:'m',8:'n',12:'n'},'1 Year':{2:'n',6:'n',11:'m'},'2 Years':{3:'n',7:'n',12:'m'}};
+const quotes=[['101','Laura Barahona','12/07/2020','15/07/2020','active',1020000]];
+const invoices=[['1','Good Shoes','running','314502365','Ewdgbsbdf'],['2','Laura Barahona','1122408617','3145063321','Payment pending']];
+const cart=[];
+const nav=[['home','HOME'],['contactos','CONTACTS'],['ventas','SALES'],['inventarios','INVENTORY'],['config','SETTINGS']];
+const route=()=>(location.hash||'#login').slice(1);
+function shell(cur,title,body){
+ return `<div class="app"><aside><h2 class="logo">LOGO</h2>${nav.map(([h,l])=>`<a href="#${h}" class="${h===cur?'on':''}">${l}</a>`).join('')}</aside>
+ <main><header><h1>${title}</h1><div class="user"><div><div>Ericson Palaganas</div><small>ROLE</small></div><div class="av">EP</div><a href="#login" style="font-size:14px;color:var(--blue);text-decoration:none">Log out</a></div></header>${body}</main></div>`;
 }
-var V={
-login:function(){return '<div class="login"><div class="panel"><h1>Login</h1><div class="form"><input id="u" placeholder="Enter Emp.Id (or) Emp Email"><input id="p" type="password" placeholder="Password" onkeydown="if(event.key===\'Enter\')doLogin()"><div id="err" style="color:#d33;font-size:13px"></div><div style="background:var(--btn);padding:12px 14px;border-radius:8px;font-size:13px"><b>Demo login</b><br>Username: Ericson Palaganas<br>Password: 1q2w3e4r5t<br><button class="btn" style="margin-top:8px;padding:6px 14px;font-size:12px" onclick="$(\'#u\').value=\'Ericson Palaganas\';$(\'#p\').value=\'1q2w3e4r5t\'">Use demo login</button></div><a href="CRM_Process_Flow.pdf" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px">📄 View the process flow (PDF)</a><a href="#forgot" style="color:var(--accent);text-align:right">Forgot Password</a><div style="display:flex;gap:16px"><button class="btn p" onclick="doLogin()">Login</button><button class="btn" onclick="$(\'#u\').value=\'\';$(\'#p\').value=\'\'">Cancel</button></div></div></div></div>'},
-forgot:function(){return '<div class="login"><div class="panel"><h1>Forgot Password</h1><div class="form"><input placeholder="Emp. Id"><input placeholder="Emp. Email"><p style="font-size:13px;color:var(--mute);margin:0">An OTP code will be sent to your registered Emp. Email Id.</p><input placeholder="OTP Code"><input type="password" placeholder="New Password"><input type="password" placeholder="Confirm New Password"><div style="display:flex;gap:16px"><button class="btn p" onclick="location.hash=\'login\'">Submit</button><button class="btn" onclick="location.hash=\'login\'">Cancel</button></div></div></div></div>'},
-dashboard:function(){
-  var c=function(t,v){return '<div class="card">'+t+'<b>'+v+'</b></div>'};
-  return shell('<div class="bar"><select><option>APP STORE</option><option>GOOGLE STORE</option></select><span>📅 From – To Date &amp; Year</span></div><div class="grid"><div class="col">'+c("Overall app ratings","4.5 ★")+c("Total no. of app downloads","50105")+c("New app downloads","10K+")+'</div><div class="col"><div class="card">Churn rate<b>85%</b><svg viewBox="0 0 240 110" width="100%" height="130"><g fill="#10e0b0"><rect x="60" y="60" width="14" height="30"/><rect x="85" y="50" width="14" height="40"/><rect x="110" y="35" width="14" height="55"/><rect x="135" y="25" width="14" height="65"/><rect x="160" y="15" width="14" height="75"/></g><rect x="10" y="90" width="14" height="12" fill="#f0258c"/><polyline points="10,100 60,85 110,50 160,30 200,10" fill="none" stroke="#1a2a6c" stroke-width="3"/><span>By 10%</span></svg>By 10%</div><div class="card">App users – growth &amp; decline rate<svg viewBox="0 0 240 130" width="100%" height="170" style="margin-top:20px"><g stroke="#f5d442"><path d="M0 20H240M0 45H240M0 70H240M0 95H240"/></g><g fill="#fdc92d" stroke="#111" stroke-width="2"><rect x="20" y="55" width="40" height="65"/><rect x="85" y="80" width="40" height="40"/><rect x="150" y="25" width="40" height="95"/></g><path d="M5 5V122H230" stroke="#111" stroke-width="2" fill="none"/></svg></div></div></div>',"dashboard")},
-reviews:function(){return shell('<h1>Customer Review Listing</h1><div class="bar"><input id="q" placeholder="Search…" oninput="filt()"><button class="btn">Filter</button><button class="btn" onclick="exp()">Export</button></div><div style="overflow-x:auto"><table><thead><tr><th>Customer Name</th><th>Ratings</th><th>Reviews</th><th>Date and Year</th><th>Store</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div><p style="text-align:center;margin-top:24px">1 &nbsp; ② &nbsp; 3 &nbsp; Next ›</p>',"reviews")},
-tasks:function(){var k=Object.keys(TASKS).map(function(s){return '<div><div class="chip" style="display:inline-block;margin-bottom:14px">'+s+'</div><div class="list">'+TASKS[s].map(function(t){return '<div class="item"><span>'+t[0]+'<br><small>'+t[2]+'</small></span><span>★ '+t[1]+'</span></div>'}).join("")+'</div></div>'}).join("");
-  return shell('<h1>Task Management</h1><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">'+k+'</div>',"tasks")},
-chat:function(){return shell('<h1>Chat</h1><div class="chat"><div id="cl"></div><div><div id="cm" style="min-height:300px"></div><div style="display:flex;gap:10px;margin-top:12px"><input id="ci" placeholder="Send Message" style="flex:1" onkeydown="if(event.key===\'Enter\')send()"><button class="btn p" onclick="send()">Send</button></div></div></div>',"chat")},
-notifications:function(){return shell('<h1>Notifications</h1><div class="chips"><span class="chip">Unread</span><span class="chip">Read</span></div><div class="list">'+NOTES.map(function(n){return '<div class="item"><span>'+n[1]+'<br><small>'+n[2]+'</small></span><span>'+n[0]+'</span></div>'}).join("")+'</div>',"")},
-profile:function(){var f=[["User ID","id"],["User Name","name"],["Email Id","email"],["Designation","role"],["Location","loc"]];
-  var b=editing?f.map(function(x){return '<label>'+x[0]+'<input id="f_'+x[1]+'" value="'+USER[x[1]]+'" style="width:100%;margin-top:4px"></label>'}).join("")+'<div style="display:flex;gap:16px"><button class="btn p" onclick="saveP()">Update and Save</button><button class="btn" onclick="editing=false;render()">Cancel</button></div>':f.map(function(x){return '<p style="margin:0">'+x[0]+' : '+USER[x[1]]+'</p>'}).join("")+'<div><button class="btn p" onclick="editing=true;render()">EDIT PROFILE</button></div>';
-  return shell('<h1>'+(editing?'Edit Profile Details':'Profile Details')+'</h1><div class="form" style="gap:20px">'+b+'</div>',"")},
-settings:function(){return shell('<h1>Settings &amp; Application Information</h1><div class="form" style="max-width:none;gap:22px"><div style="display:flex;gap:16px;align-items:center">Notifications <button class="sw '+(notifOn?'on':'')+'" aria-label="Toggle notifications" onclick="notifOn=!notifOn;render()"></button></div><p style="margin:0">App. Details – This application is developed for Enterprise Product Teams to analyze Product’s Customer Reviews and do enhancement based on it. It induces Customer Satisfaction.</p><p style="margin:0">App. Version – 1.0</p><p style="margin:0">App. Launched Year – 2022</p></div>',"settings")},
-support:function(){return shell('<h1>Application Support Details</h1><div class="form" style="max-width:none;gap:24px"><p style="margin:0">Email Id : ericson@enterprise.com</p><p style="margin:0">Contact Number: +63 9324387284</p><p style="margin:0"><a href="CRM_Process_Flow.pdf" target="_blank" rel="noopener" style="color:var(--accent)">📄 View the process flow (PDF)</a></p></div>',"support")}
-};
+function home(){
+ const d=data[range],max=250;
+ return shell('home','Activity',`<div class="card"><div class="top"><span class="sub">January 2020 - February 2020</span>
+ <div class="toggle">${['Month','1 Year','2 Years'].map(r=>`<button class="${r===range?'on':''}" data-r="${r}">${r}</button>`).join('')}</div></div>
+ <div class="stats"><div class="a"><span>Contacts</span><b>${contacts.length*41000}</b></div><div><span>Sales</span><b style="color:var(--mute)">2300</b></div></div>
+ <div class="chart"><div class="grid">${[0,50,100,150,200,250].map(v=>`<i style="bottom:${v/max*100}%"></i><em style="bottom:${v/max*100}%">${v}</em>`).join('')}</div>
+ <div class="bars">${d.map((v,i)=>`<b class="${hl[range][i]||''}" style="height:${v/max*100}%" title="${v}"></b>`).join('')}</div></div></div>
+ <div class="two"><div class="card"><span class="sub">New Quotes</span><ol>${['Sale of HP ...','Sale of Headphones','HP Laptop...'].map((x,i)=>`<li>${i+1}. ${x}</li>`).join('')}</ol></div>
+ <div class="card"><span class="sub">Latest products</span><ul>${products.map(p=>`<li>${p.n} ${p.r.slice(0,5)}.</li>`).join('')}<li>Hp pavilion h2342wfwg sdg aeg err</li></ul></div></div>`);
+}
+function contactos(){
+ return shell('contactos','Customers',`<div class="bar"><span></span><button class="btn" id="addc">＋ Add new Contact</button></div>
+ <div class="tw"><table><tr><th>Name</th><th>Tax ID</th><th>Phone</th><th>Notes</th><th>Actions</th></tr>
+ ${contacts.map((c,i)=>`<tr><td>${c.n}</td><td>${c.t}</td><td>${c.p}</td><td>${c.o}</td><td><button class="ic" title="Edit">✏️</button><button class="ic" data-del="${i}" title="Delete">🗑️</button></td></tr>`).join('')}</table></div>
+ ${modal?`<div class="modal"><div class="card"><h2 style="margin-top:0">New contact</h2>
+ <label>Name</label><input id="mn"><label>Tax ID</label><input id="mt"><label>Phone</label><input id="mp"><label>Notes</label><input id="mo">
+ <div class="act"><button class="btn ghost" id="mc">Cancel</button><button class="btn" id="ms">Save</button></div></div></div>`:''}`);
+}
+function ventas(){
+ const head=vtab==='Quotes'?['Number','Customer','Created','Due date','Status','Total','Actions']:['Number','Name','Tax ID','Phone','Notes','Actions'];
+ const rows=vtab==='Quotes'?quotes.map(q=>`<td>${q[0]}</td><td>${q[1]}</td><td>${q[2]}</td><td>${q[3]}</td><td><span class="pill">${q[4]}</span></td><td>${fmt(q[5])}</td>`):invoices.map(r=>r.map(c=>`<td>${c}</td>`).join(''));
+ return shell('ventas','Sales',`<div class="bar"><div class="tabs"><button id="tb">${vtab} ▾</button>${menu?`<div class="menu">${['Invoices','Recurring Invoices','Quotes'].map(t=>`<div data-t="${t}">${t}</div>`).join('')}</div>`:''}</div>
+ <div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn ghost" href="#facturador" style="text-decoration:none">Point of sale</a><a class="btn" href="#nueva" style="text-decoration:none">＋ Add new ${vtab==='Quotes'?'quote':'invoice'}</a></div></div>
+ <div class="tw"><table><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r}<td><button class="ic">✏️</button><button class="ic">🗑️</button></td></tr>`).join('')}</table></div>`);
+}
+function nueva(){
+ return shell('ventas','New invoice',`<div class="card"><div class="f">
+ <label>Contact *<select>${contacts.map(c=>`<option>${c.n}</option>`).join('')}</select></label><label>Date *<input type="date" value="2020-07-01"></label>
+ <label>ID<input></label><label>Payment type *<select><option>Cash</option><option>Credit</option></select></label>
+ <label>Phone<input></label><label>Term *<input type="date" value="2020-08-08"></label>
+ <span></span><label>Due date *<input type="date" value="2020-08-08"></label></div>
+ <div class="tw"><table class="rows" id="items"><tr><th>Item</th><th>Reference</th><th>Price</th><th>Disc%</th><th>Tax</th><th>Description</th><th>Quantity</th><th>Total</th><th></th></tr></table></div>
+ <button class="btn" id="addrow" style="margin-top:16px">＋ Add new row</button>
+ <div class="tot"><p>Subtotal <span id="s1">$0</span></p><p>Discount <span id="s2">$0</span></p><p>Total <b id="s3">$0</b></p></div>
+ <div class="f" style="margin-top:20px"><label class="w" style="grid-template-columns:1fr"><span>Terms and conditions</span><textarea rows="2"></textarea></label></div>
+ <div class="act"><a class="btn ghost" href="#ventas" style="text-decoration:none">Cancel</a><button class="btn ghost">Preview</button><button class="btn" id="save">Save</button></div></div>`);
+}
+function stub(cur,t){return shell(cur,t,`<div class="card"><p>Coming soon.</p></div>`)}
+function facturador(){
+ const tot=cart.reduce((a,c)=>a+c.p*c.q,0);
+ return `<div class="pos"><nav><span>Cashier</span><span style="font-size:16px;display:flex;gap:20px;align-items:center"><a href="#ventas">← Back</a>Ericson Palaganas</span></nav><div class="posb">
+ <section><input placeholder="🔍 Search products" style="padding:12px 16px;font-size:18px;border-radius:12px">
+ ${products.map((p,i)=>`<div class="prod" data-p="${i}"><span>${p.r}</span><span>${p.n}</span><span>${fmt(p.p)}</span><span style="color:var(--blue);font-size:26px">★</span></div>`).join('')}</section>
+ <section class="r"><div class="top"><span class="sub">Customers</span><a style="color:var(--blue);font-size:14px">add</a></div>
+ <div style="margin:14px 0;border-bottom:3px solid var(--grey)"><select>${contacts.map(c=>`<option>${c.n}</option>`).join('')}</select><br><br></div>
+ ${cart.length?cart.map((c,i)=>`<div class="line"><span>${c.n}</span><span>${c.q} × ${fmt(c.p)}</span><b>${fmt(c.p*c.q)}</b><button class="ic" data-rm="${i}">🗑️</button></div>`).join(''):'<p style="color:var(--mute)">Tap a product to add it.</p>'}
+ <div class="sold"><span>Sold</span><b>${fmt(tot)}</b></div>
+ <div class="act" style="margin:0"><button class="btn ghost" id="clr">Cancel Current</button><button class="btn" id="pay">Charge</button></div></section></div></div>`;
+}
+function auth(reg){
+ return `<div class="auth"><div class="card"><h2>${reg?'Sign Up':'Sign in to access your latest data!'}</h2>
+ <input id="lu" placeholder="Username" autocomplete="username"><input id="lp" type="password" placeholder="Password" autocomplete="current-password"><p id="err" style="color:#c0392b;font-size:14px;margin:-8px 0 12px;min-height:18px"></p>${reg?'':'<div class="demo"><b>Demo account</b><span>Username: <code>EricsonPalaganas</code></span><span>Password: <code>1q2w3e4r5t</code></span><button type="button" id="fill">Fill in demo login</button></div>'}${reg?'<input type="password" placeholder="Confirm Password"><input placeholder="Nickname">':''}
+ <button class="btn" id="go">${reg?'Sign Up':'Sign In'}</button><p>${reg?'Already have an account? <a href="#login">Sign In</a>':'No account yet? <a href="#registro">Sign Up</a>'}</p>${reg?'':'<p><a>Forgot your password?</a></p>'}</div></div>`;
+}
+function rowTpl(){
+ return `<tr><td><select class="it">${products.map((p,i)=>`<option value="${i}">${p.n}</option>`).join('')}</select></td><td class="rf"></td><td class="pr"></td><td><input class="ds" value="0" style="width:60px"></td><td>0%</td><td><input></td><td><input class="qt" value="1" style="width:60px"></td><td class="tt"></td><td><button class="ic rm">🗑️</button></td></tr>`;
+}
+function recalc(){
+ let s=0,d=0;
+ document.querySelectorAll('#items tr:not(:first-child)').forEach(r=>{
+  const p=products[r.querySelector('.it').value],q=+r.querySelector('.qt').value||0,ds=+r.querySelector('.ds').value||0;
+  r.querySelector('.rf').textContent=p.r;r.querySelector('.pr').textContent=fmt(p.p);
+  const gross=p.p*q,disc=gross*ds/100;s+=gross;d+=disc;r.querySelector('.tt').textContent=fmt(gross-disc);
+ });
+ $('#s1').textContent=fmt(s);$('#s2').textContent=fmt(d);$('#s3').textContent=fmt(s-d);
+}
 function render(){
-  var h=(location.hash||"#login").slice(1);if(!V[h])h="login";if(h==="login")authed=false;if(!authed&&h!=="login"&&h!=="forgot"){location.hash="login";return}
-  $("#root").innerHTML=V[h]();
-  if(h==="reviews")filt();
-  if(h==="chat")drawChat();
-  window.scrollTo(0,0);
+ const r=route(),root=$('#root');
+ if(r==='login')setAuth(false);
+ if(r!=='login'&&r!=='registro'&&!authed()){location.hash='#login';return}
+ root.innerHTML=({login:()=>auth(0),registro:()=>auth(1),home,contactos,ventas,nueva,facturador,inventarios:()=>stub('inventarios','Inventory'),config:()=>stub('config','Settings')}[r]||home)();
+ bind(r);
 }
-function filt(){var q=($("#q")||{value:""}).value.toLowerCase();
-  $("#tb").innerHTML=REV.filter(function(r){return r.join(" ").toLowerCase().indexOf(q)>-1}).map(function(r){return '<tr><td>● '+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td><td>'+r[5]+'</td></tr>'}).join("")}
-function exp(){try{var t=REV.map(function(r){return r.join(",")}).join("\n");navigator.clipboard.writeText(t);alert("Reviews copied to clipboard as CSV.")}catch(e){alert("Export is not available here.")}}
-function drawChat(){
-  $("#cl").innerHTML=Object.keys(CHATS).map(function(n){return '<div class="item" style="cursor:pointer;margin-bottom:10px;'+(n===chatWith?'outline:2px solid var(--accent)':'')+'" onclick="chatWith=\''+n+'\';msgs=[];drawChat()"><span>'+n+'<br><small>'+CHATS[n][0]+'</small></span></div>'}).join("");
-  $("#cm").innerHTML='<div class="msg"><b>'+chatWith+'</b><br>'+CHATS[chatWith][0]+'</div>'+msgs.map(function(m){return '<div class="msg me">'+m+'</div>'}).join("")}
-function send(){var i=$("#ci"),v=i.value.trim();if(!v)return;msgs.push(v.replace(/[<>&]/g,""));i.value="";drawChat()}
-var authed=false;
-function doLogin(){var u=$("#u").value.trim().toLowerCase(),p=$("#p").value;
-  if((u==="ericson palaganas"||u==="ericson@enterprise.com")&&p==="1q2w3e4r5t"){authed=true;location.hash="dashboard"}else{$("#err").textContent="Incorrect username or password."}}
-function saveP(){["id","name","email","role","loc"].forEach(function(k){USER[k]=$("#f_"+k).value.replace(/[<>"&]/g,"")});editing=false;render()}
-window.addEventListener("hashchange",render);render();
+function bind(r){
+ document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{range=b.dataset.r;render()});
+ const go=$('#go');
+ if(go&&r==='registro')go.onclick=()=>location.hash='#login';
+ if(go&&r==='login'){
+  const attempt=async()=>{
+   let ok=false;try{ok=sha($('#lu').value.trim()+':'+$('#lp').value)===HASH}catch(e){}
+   if(ok){setAuth(true);location.hash='#home'}else{$('#err').textContent='Incorrect username or password.'}
+  };
+  go.onclick=attempt;
+  $('#fill').onclick=()=>{$('#lu').value='EricsonPalaganas';$('#lp').value='1q2w3e4r5t';$('#err').textContent=''};
+  document.querySelectorAll('#lu,#lp').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')attempt()}));
+ }
+ if(r==='contactos'){
+  $('#addc').onclick=()=>{modal=true;render()};
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{contacts.splice(+b.dataset.del,1);render()});
+  if(modal){$('#mc').onclick=()=>{modal=false;render()};
+   $('#ms').onclick=()=>{const n=$('#mn').value.trim();if(!n){$('#mn').focus();return}contacts.push({n,t:$('#mt').value,p:$('#mp').value,o:$('#mo').value});modal=false;render()}}
+ }
+ if(r==='ventas'){
+  $('#tb').onclick=()=>{menu=!menu;render()};
+  document.querySelectorAll('[data-t]').forEach(m=>m.onclick=()=>{vtab=m.dataset.t;menu=false;render()});
+ }
+ if(r==='nueva'){
+  const t=$('#items'),add=()=>{t.insertAdjacentHTML('beforeend',rowTpl());recalc()};add();
+  $('#addrow').onclick=add;
+  t.addEventListener('input',recalc);t.addEventListener('change',recalc);
+  t.addEventListener('click',e=>{if(e.target.classList.contains('rm')){e.target.closest('tr').remove();recalc()}});
+  $('#save').onclick=()=>{invoices.push([String(invoices.length+1),'New invoice','—','—',$('#s3').textContent]);location.hash='#ventas'};
+ }
+ if(r==='facturador'){
+  document.querySelectorAll('[data-p]').forEach(p=>p.onclick=()=>{const x=products[+p.dataset.p],f=cart.find(c=>c.n===x.n);f?f.q++:cart.push({n:x.n,p:x.p,q:1});render()});
+  document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{cart.splice(+b.dataset.rm,1);render()});
+  $('#clr').onclick=()=>{cart.length=0;render()};
+  $('#pay').onclick=()=>{if(cart.length){cart.length=0;render();alert('Sale recorded')}};
+ }
+}
+const HASH='d406dba106230c11802a75a05f43d3c0b160c58888b3a98393b5e229dc7f585e';
+let memAuth=false;
+const authed=()=>{try{return sessionStorage.getItem('ok')==='1'}catch(e){return memAuth}};
+const setAuth=v=>{memAuth=v;try{v?sessionStorage.setItem('ok','1'):sessionStorage.removeItem('ok')}catch(e){}};
+function sha(s){const u=unescape(encodeURIComponent(s)),K=[],H=[];let p=0,c={};
+for(let n=2;p<64;n++){if(!c[n]){for(let i=n*n;i<313;i+=n)c[i]=1;const f=x=>(x-(x|0))*4294967296|0;H[p]=f(Math.pow(n,.5));K[p++]=f(Math.pow(n,1/3))}}
+const w=[],l=u.length*8;let m=u+'\x80';while(m.length%64-56)m+='\x00';
+for(let i=0;i<m.length;i++)w[i>>2]|=m.charCodeAt(i)<<(24-i%4*8);
+w[w.length]=(l/4294967296)|0;w[w.length]=l;
+let h=H.slice(0,8);
+for(let j=0;j<w.length;){const v=w.slice(j,j+=16),o=h.slice(0);
+for(let i=0;i<64;i++){const a=v[i-15],e=v[i-2],x=h[0],y=h[4];
+if(i>=16)v[i]=(v[i-16]+(((a>>>7)|(a<<25))^((a>>>18)|(a<<14))^(a>>>3))+v[i-7]+(((e>>>17)|(e<<15))^((e>>>19)|(e<<13))^(e>>>10)))|0;
+const t=(h[7]+(((y>>>6)|(y<<26))^((y>>>11)|(y<<21))^((y>>>25)|(y<<7)))+((y&h[5])^(~y&h[6]))+K[i]+v[i])|0;
+const t2=((((x>>>2)|(x<<30))^((x>>>13)|(x<<19))^((x>>>22)|(x<<10)))+((x&h[1])^(x&h[2])^(h[1]&h[2])))|0;
+h=[(t+t2)|0,x,h[1],h[2],(h[3]+t)|0,y,h[5],h[6]];}
+for(let i=0;i<8;i++)h[i]=(h[i]+o[i])|0;}
+return h.map(x=>('0000000'+(x>>>0).toString(16)).slice(-8)).join('')}
+addEventListener('hashchange',render);render();
 </script>
 </body>
 </html>
