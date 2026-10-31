@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SalesProCrm CRM</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6f3;--surface:#fff;--ink:#1c2a2d;--muted:#64757a;--line:#dde3df;--accent:#0f5c5a;--accent-ink:#fff;--warn:#a86a0a;--bad:#b23a48;--good:#2f7d4f;--tint:#e8f0ee;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1516;--surface:#172022;--ink:#e6eeee;--muted:#8fa2a5;--line:#263336;--accent:#4fb3ae;--accent-ink:#06201f;--warn:#e0a548;--bad:#e5707d;--good:#6cc08d;--tint:#1d2c2d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1516;--surface:#172022;--ink:#e6eeee;--muted:#8fa2a5;--line:#263336;--accent:#4fb3ae;--accent-ink:#06201f;--warn:#e0a548;--bad:#e5707d;--good:#6cc08d;--tint:#1d2c2d;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif}
+.app{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
+nav{background:var(--surface);border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
+.brand{font-weight:700;font-size:18px;letter-spacing:-.02em;padding:0 10px 18px}
+nav a{display:block;padding:9px 10px;border-radius:8px;color:var(--muted);text-decoration:none;font-weight:500}
+nav a:hover{background:var(--tint);color:var(--ink)}
+nav a.on{background:var(--accent);color:var(--accent-ink)}
+nav .sp{flex:1}
+main{padding:28px 32px 60px;max-width:1280px;width:100%;min-width:0}
+h1{font-size:26px;letter-spacing:-.02em;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 22px}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.bar .grow{flex:1}
+button,input,select,textarea{font:inherit;color:inherit}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.danger{background:transparent;color:var(--bad);border:1px solid var(--line)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.bar input,.bar select{width:auto}
+.bar input[type=search]{min-width:240px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.stat b{display:block;font-size:24px;letter-spacing:-.02em}
+.stat span{color:var(--muted);font-size:13px}
+.strip{display:flex;height:46px;border-radius:8px;overflow:hidden;gap:2px;margin:12px 0 8px}
+.strip div{display:flex;align-items:center;padding:0 10px;color:var(--accent-ink);font-weight:600;font-size:13px;min-width:0;white-space:nowrap;overflow:hidden}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-weight:600;color:var(--muted);font-size:13px;padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:11px 12px;border-bottom:1px solid var(--line)}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--tint)}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:var(--tint)}
+.pill.customer{color:var(--good)}.pill.lead{color:var(--warn)}.pill.inactive{color:var(--muted)}
+.muted{color:var(--muted)}
+.board{display:grid;grid-template-columns:repeat(9,230px);gap:12px;overflow-x:auto;padding-bottom:8px}
+.col{background:var(--tint);border-radius:12px;padding:10px;min-height:240px}
+.col.over{outline:2px dashed var(--accent)}
+.col h3{margin:2px 4px 10px;font-size:14px;display:flex;justify-content:space-between}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;cursor:grab}
+.card b{display:block}
+.task{display:flex;gap:12px;align-items:center;padding:11px 4px;border-bottom:1px solid var(--line)}
+.task input{width:auto}
+.task .t{flex:1;cursor:pointer}
+.task.done .t{text-decoration:line-through;color:var(--muted)}
+.late{color:var(--bad);font-weight:600}
+.empty{color:var(--muted);padding:22px 4px}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:22px;width:min(440px,92vw)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h2{margin:0 0 14px;font-size:19px}
+dialog label{display:block;font-weight:600;font-size:13px;margin:10px 0 4px}
+.acts{display:flex;gap:8px;margin-top:18px}
+.acts .grow{flex:1}
+[hidden]{display:none!important}
+.set{margin-bottom:16px;max-width:640px}
+.set label{display:block;font-weight:600;font-size:13px;margin:12px 0 4px}
+.set .acts{align-items:center;flex-wrap:wrap}
+.set p{margin:6px 0 10px}
+.set label.chk{display:flex;gap:8px;align-items:center;font-weight:400;font-size:14px}
+.set label.chk input{width:auto}
+.pill.new{color:var(--warn)}.pill.contacted,.pill.qualified,.pill.meeting{color:var(--accent)}.pill.nurture{color:var(--muted)}
+.fun{display:grid;grid-template-columns:120px 1fr 34px;gap:10px;align-items:center;margin:9px 0;font-size:14px}
+.fun i{display:block;height:14px;border-radius:4px;background:var(--accent);min-width:2px}
+.fun span:last-child{text-align:right;font-weight:600}
+.note{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.note span{flex:1}
+.fun.b{background:none;border:0;width:100%;text-align:left;cursor:pointer;padding:0;grid-template-columns:120px 1fr 80px}
+.fun.b:hover i{opacity:.75}
+.fun.on span:first-child{font-weight:700;color:var(--accent)}
+.prog{height:10px;background:var(--tint);border-radius:5px;overflow:hidden;margin-top:4px}
+.prog i{display:block;height:100%;background:var(--good)}
+.pill.pending,.pill.medium{color:var(--warn)}.pill.progress{color:var(--accent)}.pill.completed,.pill.low{color:var(--good)}.pill.overdue,.pill.high{color:var(--bad)}.pill.cancelled{color:var(--muted)}
+.rowbtn{display:flex;gap:6px}.rowbtn .btn{padding:4px 10px;font-size:13px}
+.chip{display:inline-block;padding:3px 10px;border-radius:99px;background:var(--tint);font-size:13px;margin:0 6px 6px 0}
+.chip.warn{color:var(--warn);font-weight:600}
+.rep{margin-bottom:16px}.rep>b{display:block;margin-bottom:6px}
+.login{min-height:100vh;display:grid;place-items:center;padding:24px}
+.lcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px;width:min(400px,100%)}
+.lcard .brand{padding:0 0 14px}
+.lcard label{display:block;font-weight:600;font-size:13px;margin:12px 0 4px}
+.lcard .chk{display:flex;gap:8px;align-items:center;font-weight:400}
+.lcard .chk input{width:auto}
+.err{color:var(--bad);min-height:20px;margin:8px 0;font-size:14px}
+.demo{margin-top:18px;padding:12px;border-radius:8px;background:var(--tint);font-size:14px;display:grid;gap:6px}
+.pill.assigned,.pill.engaged,.pill.meetingbooked{color:var(--accent)}.pill.followup{color:var(--warn)}.pill.converted{color:var(--good)}.pill.disqualified{color:var(--bad)}.pill.unresponsive,.pill.nurturing{color:var(--muted)}
+.modg{display:grid;gap:6px;margin-top:12px;text-align:center}.mod{display:block;border-radius:12px;padding:14px;text-decoration:none;color:var(--ink)}.mod b,.mod span{display:block}.mod2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ar{text-align:center;color:var(--muted)}
+dialog.wide{width:min(660px,94vw);max-height:92vh;overflow:auto}.qg{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:10px}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:12px}.flow div{border-radius:10px;padding:10px 12px;font-size:14px}.flow b,.flow span{display:block}summary{cursor:pointer}
+@media (max-width:820px){
+.app{grid-template-columns:1fr}
+nav{position:sticky;top:env(safe-area-inset-top,0px);height:auto;flex-direction:row;overflow-x:auto;padding:10px;z-index:5;align-items:center}
+.brand{padding:0 8px 0 4px}nav .sp{display:none}
+main{padding:20px 16px 60px}.two{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="login" id="login"><div class="lcard"><div class="brand">SalesProCrm</div><h1>Sign in</h1><p class="sub">Use your account to open your contacts, deals, and tasks.</p><form id="lform"><label for="lu">Username</label><input id="lu" autocomplete="username" required><label for="lp">Password</label><input id="lp" type="password" autocomplete="current-password" required><label class="chk"><input type="checkbox" id="show"> Show password</label><div id="lerr" class="err" role="alert"></div><button class="btn" style="width:100%" type="submit">Sign in</button></form><div class="demo"><b>Demo account</b><div>Username: ericson1981</div><div>Password: 1q2w3e4r5t</div><button class="btn ghost" id="demo" type="button">Fill demo account</button></div></div></div>
+<div class="app" id="app" hidden>
+<nav aria-label="Main">
+<div class="brand" id="bname">SalesProCrm</div>
+<a href="#leads" data-v="leads">Leads</a>
+<a href="#overview" data-v="overview">Dashboard</a>
+<a href="#contacts" data-v="contacts">Contacts</a>
+<a href="#pipeline" data-v="pipeline">Pipeline</a>
+<a href="#tasks" data-v="tasks">Tasks</a>
+<a href="#reports" data-v="reports">Reports</a>
+<a href="#settings" data-v="settings">Settings</a>
+<div class="sp"></div>
+<div id="who" style="font-size:13px;color:var(--muted);padding:8px 10px 0"></div>
+<a href="#" id="signout" style="font-size:13px">Sign out</a>
+</nav>
+<main id="main"></main>
+</div>
+<dialog id="dlg"></dialog>
+<script>
+(function(){
+var KEY="ledgerline.crm.v2",STAGES=["New Lead","Contacted","Qualified","Meeting Scheduled","Meeting Completed","Proposal Sent","Negotiation","Won","Lost"],SLB={Won:"Closed Won",Lost:"Closed Lost"},
+ROLE={"New Lead":"SDR / BDR","Contacted":"SDR / BDR","Qualified":"SDR / BDR","Meeting Scheduled":"SDR / AE","Meeting Completed":"AE","Proposal Sent":"AE","Negotiation":"AE","Won":"AE / Manager","Lost":"AE / Manager"},
+DESC={"New Lead":"Prospect entered into CRM","Contacted":"Initial outreach completed","Qualified":"Prospect meets qualification criteria","Meeting Scheduled":"Discovery call or demo booked","Meeting Completed":"Discovery and requirements discussed","Proposal Sent":"Commercial proposal delivered","Negotiation":"Pricing and terms discussed","Won":"Deal successfully converted","Lost":"Deal unsuccessful"};
+function SL(s){return SLB[s]||s}
+var SCOL={Lead:"#8a9a9d",Qualified:"#3f7f9a",Proposal:"#a86a0a",Won:"#2f7d4f",Lost:"#b23a48"};
+var money={format:function(v){return new Intl.NumberFormat("en-US",{style:"currency",currency:(S&&S.settings&&S.settings.currency)||"USD",maximumFractionDigits:0}).format(v)}};
+function day(o){var d=new Date();d.setDate(d.getDate()+o);return d.toISOString().slice(0,10)}
+var today=day(0);
+function seed(){return{contacts:[],deals:[],tasks:[],pipeV:2,settings:{business:"",currency:"USD"}}}
+function seedSample(){return{
+contacts:[
+{id:"c1",name:"Maya Reyes",company:"Harbor Coffee Co.",email:"maya@harborcoffee.example",phone:"+63 917 555 0142",status:"customer",notes:"Prefers email. Renews in March."},
+{id:"c2",name:"Daniel Cruz",company:"Northwind Logistics",email:"dcruz@northwind.example",phone:"+63 918 555 0199",status:"lead",notes:"Met at the trade expo."},
+{id:"c3",name:"Priya Nair",company:"Bluepine Studio",email:"priya@bluepine.example",phone:"+63 920 555 0171",status:"lead",notes:"Asked about annual pricing."},
+{id:"c4",name:"Tomas Villanueva",company:"Sunrise Dental",email:"tomas@sunrisedental.example",phone:"+63 915 555 0108",status:"customer",notes:""},
+{id:"c5",name:"Elena Park",company:"Granite Works",email:"elena@graniteworks.example",phone:"+63 919 555 0123",status:"inactive",notes:"Budget frozen until Q2."}],
+deals:[
+{id:"d1",title:"Annual supply plan",contactId:"c1",value:18000,stage:"Won"},
+{id:"d2",title:"Fleet tracking pilot",contactId:"c2",value:24000,stage:"Qualified"},
+{id:"d3",title:"Brand site rebuild",contactId:"c3",value:9500,stage:"Proposal"},
+{id:"d4",title:"Clinic booking system",contactId:"c4",value:12000,stage:"Proposal"},
+{id:"d5",title:"Equipment contract",contactId:"c5",value:30000,stage:"Lost"},
+{id:"d6",title:"Intro workshop",contactId:"c3",value:3200,stage:"Lead"}],
+tasks:[
+{id:"t1",title:"Send proposal to Bluepine",due:day(1),contactId:"c3",done:false},
+{id:"t2",title:"Call Daniel about pilot scope",due:day(-1),contactId:"c2",done:false},
+{id:"t3",title:"Renewal check-in with Maya",due:day(12),contactId:"c1",done:false},
+{id:"t4",title:"Share case study with Tomas",due:day(-3),contactId:"c4",done:true}]}}
+var S;
+function load(){try{var r=localStorage.getItem(KEY);if(r){S=JSON.parse(r);if(!S.settings)S.settings={business:"",currency:"USD"};S.contacts.forEach(function(c){if(c.status==="lead")c.status="new"});if(S.pipeV!==2){S.deals=[];S.pipeV=2}return}}catch(e){}S=seed();sampleAll()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function uid(){return"x"+Math.random().toString(36).slice(2,9)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function cname(id){var c=S.contacts.filter(function(x){return x.id===id})[0];return c?c.name:"No contact"}
+function fdate(d){return new Date(d+"T00:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"})}
+var $=function(s){return document.querySelector(s)},main=$("#main"),dlg=$("#dlg");
+
+/* modal */
+function modal(title,fields,vals,onSave,onDel){
+var h="<h2>"+esc(title)+"</h2>";
+fields.forEach(function(f){
+var v=vals[f.k]==null?"":vals[f.k];
+h+="<label for='f_"+f.k+"'>"+esc(f.label)+"</label>";
+if(f.type==="select"){h+="<select id='f_"+f.k+"'>"+f.options.map(function(o){var ov=o.v!==undefined?o.v:o,ol=o.l!==undefined?o.l:o;return"<option value='"+esc(ov)+"'"+(ov==v?" selected":"")+">"+esc(ol)+"</option>"}).join("")+"</select>"}
+else if(f.type==="textarea"){h+="<textarea id='f_"+f.k+"' rows='3'>"+esc(v)+"</textarea>"}
+else{h+="<input id='f_"+f.k+"' type='"+(f.type||"text")+"' value='"+esc(v)+"'>"}});
+h+="<div class='acts'>"+(onDel?"<button class='btn danger' id='mdel'>Delete</button>":"")+"<span class='grow'></span><button class='btn ghost' id='mcancel'>Cancel</button><button class='btn' id='msave'>Save</button></div>";
+dlg.className="";dlg.innerHTML=h;
+$("#mcancel").onclick=function(){dlg.close()};
+if(onDel)$("#mdel").onclick=function(){if(confirm("Delete this item? This can’t be undone.")){onDel();dlg.close()}};
+$("#msave").onclick=function(){var o={};var ok=true;fields.forEach(function(f){var el=$("#f_"+f.k);o[f.k]=el.value.trim();if(f.req&&!o[f.k]){ok=false;el.style.borderColor="var(--bad)"}});if(!ok)return;onSave(o);dlg.close()};
+dlg.showModal();var first=dlg.querySelector("input,select");if(first)first.focus()}
+
+/* contacts */
+var CF=[{k:"name",label:"Name",req:1},{k:"company",label:"Company"},{k:"email",label:"Email",type:"email"},{k:"phone",label:"Phone"},{k:"status",label:"Lead status",type:"select",options:[{v:"new",l:"New"},{v:"contacted",l:"Contacted"},{v:"qualified",l:"Qualified"},{v:"meeting",l:"Meeting booked"},{v:"customer",l:"Customer"},{v:"nurture",l:"Nurture"},{v:"inactive",l:"Inactive"}]},{k:"owner",label:"Owner (assigned automatically if blank)"},{k:"source",label:"Lead source (for example Referral, Website, Event)"},{k:"campaign",label:"Campaign"},{k:"created",label:"Date added",type:"date"},{k:"attempts",label:"Contact attempts",type:"number"},{k:"firstContact",label:"First contacted on",type:"date"},{k:"meeting",label:"Meeting",type:"select",options:[{v:"",l:"None"},{v:"booked",l:"Booked"},{v:"held",l:"Held"}]},{k:"notes",label:"Notes",type:"textarea"}];
+function editContact(id){
+var c=id?S.contacts.filter(function(x){return x.id===id})[0]:{status:"new",created:today,attempts:0,meeting:""};
+modal(id?"Edit contact":"Add contact",CF,c,function(o){
+o.attempts=Number(o.attempts)||0;if(!o.created)o.created=today;if(id){Object.assign(c,o)}else{o.id=uid();S.contacts.unshift(o)}save();route()},
+id?function(){S.contacts=S.contacts.filter(function(x){return x.id!==id});S.deals.forEach(function(d){if(d.contactId===id)d.contactId=""});S.tasks.forEach(function(t){if(t.contactId===id)t.contactId=""});save();route()}:null)}
+function contactOpts(){return[{v:"",l:"No contact"}].concat(S.contacts.map(function(c){return{v:c.id,l:c.name}}))}
+
+function vContacts(){
+main.innerHTML="<h1>Contacts</h1><p class='sub'>Everyone you work with, in one place.</p><div class='bar'><input type='search' id='q' placeholder='Search name, company, email' aria-label='Search contacts'><select id='st' aria-label='Filter by status'><option value=''>All statuses</option><option>new</option><option>contacted</option><option>qualified</option><option>meeting</option><option>customer</option><option>nurture</option><option>inactive</option></select><span class='grow'></span><button class='btn' id='add'>Add contact</button></div><div class='panel tablewrap'><table><thead><tr><th>Name</th><th>Company</th><th>Email</th><th>Status</th><th>Open deals</th></tr></thead><tbody id='rows'></tbody></table></div>";
+function rows(){
+var q=$("#q").value.toLowerCase(),st=$("#st").value;
+var l=S.contacts.filter(function(c){return(!st||c.status===st)&&(c.name+c.company+c.email).toLowerCase().indexOf(q)>-1});
+$("#rows").innerHTML=l.length?l.map(function(c){
+var n=S.deals.filter(function(d){return d.contactId===c.id&&d.stage!=="Won"&&d.stage!=="Lost"}).length;
+return"<tr data-id='"+c.id+"' tabindex='0'><td><b>"+esc(c.name)+"</b></td><td>"+esc(c.company)+"</td><td class='muted'>"+esc(c.email)+"</td><td><span class='pill "+c.status+"'>"+c.status+"</span></td><td>"+n+"</td></tr>"}).join(""):"<tr><td colspan='5' class='empty'>No contacts match. Clear the search or add a new contact.</td></tr>"}
+$("#q").oninput=rows;$("#st").onchange=rows;$("#add").onclick=function(){editContact()};
+$("#rows").onclick=function(e){var tr=e.target.closest("tr[data-id]");if(tr)editContact(tr.dataset.id)};
+$("#rows").onkeydown=function(e){if(e.key==="Enter"){var tr=e.target.closest("tr[data-id]");if(tr)editContact(tr.dataset.id)}};
+rows()}
+
+/* pipeline */
+function editDeal(id,stage){
+var d=id?S.deals.filter(function(x){return x.id===id})[0]:{stage:stage||"New Lead",contactId:""};
+var F=[{k:"title",label:"Deal name",req:1},{k:"contactId",label:"Contact",type:"select",options:contactOpts()},{k:"value",label:"Deal value",type:"number"},{k:"stage",label:"Stage",type:"select",options:STAGES.map(function(g){return{v:g,l:SL(g)}})},{k:"lostReason",label:"Reason lost (for Closed Lost deals)",type:"select",options:[{v:"",l:"Not applicable"},"Price","Chose a competitor","No budget","No decision","Bad timing","Other"]}];
+modal(id?"Edit deal":"Add deal",F,d,function(o){o.value=Number(o.value)||0;if(o.stage==="Lost"&&!o.lostReason)o.lostReason="Not recorded";if(o.stage!=="Lost")o.lostReason="";if(id){Object.assign(d,o)}else{o.id=uid();o.created=today;S.deals.push(o)}save();route()},
+id?function(){S.deals=S.deals.filter(function(x){return x.id!==id});save();route()}:null)}
+function vPipeline(){
+main.innerHTML="<h1>Pipeline</h1><p class='sub'>Drag a deal to a new stage as it moves.</p><div class='bar'><span class='grow'></span><button class='btn' id='add'>Add deal</button></div><div class='board' id='board'></div>";
+$("#add").onclick=function(){editDeal()};
+$("#board").innerHTML=STAGES.map(function(s){
+var ds=S.deals.filter(function(d){return d.stage===s}),tot=ds.reduce(function(a,d){return a+d.value},0);
+return"<div class='col' data-s='"+s+"'><h3><span>"+SL(s)+"</span><span class='muted'>"+money.format(tot)+"</span></h3><div class='muted' style='font-size:12px;margin:0 4px 10px'>"+DESC[s]+"<br>Owner: "+ROLE[s]+"</div>"+ds.map(function(d){
+return"<div class='card' draggable='true' data-id='"+d.id+"' tabindex='0'><b>"+esc(d.title)+"</b><span class='muted'>"+esc(cname(d.contactId))+"</span><div>"+money.format(d.value)+"</div>"+(s==="Lost"&&d.lostReason?"<div class='muted' style='font-size:13px'>Reason: "+esc(d.lostReason)+"</div>":"")+"</div>"}).join("")+"</div>"}).join("");
+var b=$("#board"),drag=null;
+b.ondragstart=function(e){var c=e.target.closest(".card");if(c){drag=c.dataset.id;e.dataTransfer.setData("text/plain",drag)}};
+b.ondragover=function(e){var c=e.target.closest(".col");if(c){e.preventDefault();c.classList.add("over")}};
+b.ondragleave=function(e){var c=e.target.closest(".col");if(c)c.classList.remove("over")};
+b.ondrop=function(e){var c=e.target.closest(".col");if(!c||!drag)return;e.preventDefault();var d=S.deals.filter(function(x){return x.id===drag})[0];if(d){d.stage=c.dataset.s;if(d.stage==="Lost"){d.lostReason=(prompt("Reason this deal was lost (for example price, timing, or competitor):")||"").trim()||"Not recorded"}else d.lostReason="";save();sweep();vPipeline()}};
+b.onclick=function(e){var c=e.target.closest(".card");if(c)editDeal(c.dataset.id)};
+b.onkeydown=function(e){if(e.key==="Enter"){var c=e.target.closest(".card");if(c)editDeal(c.dataset.id)}}}
+
+/* tasks */
+function editTask(id){
+var t=id?S.tasks.filter(function(x){return x.id===id})[0]:{due:today,contactId:"",done:false};
+var F=[{k:"title",label:"Task",req:1},{k:"due",label:"Due date",type:"date"},{k:"contactId",label:"Contact",type:"select",options:contactOpts()}];
+modal(id?"Edit task":"Add task",F,t,function(o){if(id){Object.assign(t,o)}else{o.id=uid();o.done=false;S.tasks.push(o)}save();route()},
+id?function(){S.tasks=S.tasks.filter(function(x){return x.id!==id});save();route()}:null)}
+function taskRow(t){
+return"<div class='task"+(t.done?" done":"")+"'><input type='checkbox' data-id='"+t.id+"' "+(t.done?"checked":"")+" aria-label='Mark done'><div class='t' data-id='"+t.id+"'>"+esc(t.title)+"<div class='muted' style='font-size:13px'>"+esc(cname(t.contactId))+"</div></div><span class='"+(!t.done&&t.due<today?"late":"muted")+"'>"+(t.due?fdate(t.due):"")+"</span></div>"}
+function vTasks(){
+var l=S.tasks.slice().sort(function(a,b){return(a.done-b.done)||(a.due>b.due?1:-1)});
+main.innerHTML="<h1>Tasks</h1><p class='sub'>Follow-ups, sorted by what’s due first.</p><div class='bar'><span class='grow'></span><button class='btn' id='add'>Add task</button></div><div class='panel'>"+(l.length?l.map(taskRow).join(""):"<div class='empty'>No tasks yet. Add a follow-up to stay on top of your contacts.</div>")+"</div>";
+$("#add").onclick=function(){editTask()};
+main.querySelector(".panel").onclick=function(e){
+var cb=e.target.closest("input[type=checkbox]");
+if(cb){var t=S.tasks.filter(function(x){return x.id===cb.dataset.id})[0];t.done=cb.checked;save();vTasks();return}
+var tt=e.target.closest(".t");if(tt)editTask(tt.dataset.id)}}
+
+/* overview */
+function vOverview(){
+var open=S.deals.filter(function(d){return d.stage!=="Won"&&d.stage!=="Lost"}),
+sum=function(a){return a.reduce(function(x,d){return x+d.value},0)},
+won=S.deals.filter(function(d){return d.stage==="Won"}),
+due=S.tasks.filter(function(t){return!t.done&&t.due<=today}),
+tot=sum(S.deals)||1;
+var strip=STAGES.map(function(s){var v=sum(S.deals.filter(function(d){return d.stage===s}));return v?"<div style='flex:"+v+";background:"+SCOL[s]+"' title='"+s+"'>"+(v/tot>.1?s:"")+"</div>":""}).join("");
+var legend=STAGES.map(function(s){return"<span><span style='color:"+SCOL[s]+"'>&#9632;</span> "+s+" "+money.format(sum(S.deals.filter(function(d){return d.stage===s})))+"</span>"}).join("");
+var up=S.tasks.filter(function(t){return!t.done}).sort(function(a,b){return a.due>b.due?1:-1}).slice(0,5);
+main.innerHTML="<h1>Overview</h1><p class='sub'>Where your business stands today.</p>"+(S.contacts.length+S.deals.length+S.tasks.length?"":"<div class='panel' style='margin-bottom:16px'><b>Your CRM is empty.</b> <span class='muted'>Enter your first records in <a href='#settings'>Settings</a>, or add them from the Contacts, Pipeline, and Tasks tabs.</span></div>")+
+"<div class='stats'><div class='panel stat'><b>"+money.format(sum(open))+"</b><span>Open pipeline</span></div><div class='panel stat'><b>"+money.format(sum(won))+"</b><span>Won to date</span></div><div class='panel stat'><b>"+S.contacts.length+"</b><span>Contacts</span></div><div class='panel stat'><b class='"+(due.length?"late":"")+"'>"+due.length+"</b><span>Tasks due or overdue</span></div></div>"+
+"<div class='panel'><b>Deal value by stage</b><div class='strip'>"+(S.deals.length?strip:"")+"</div><div class='legend'>"+legend+"</div></div>"+
+"<div class='two'><div class='panel'><b>Next tasks</b>"+(up.length?up.map(taskRow).join(""):"<div class='empty'>You’re all caught up.</div>")+"</div><div class='panel'><b>Newest contacts</b>"+(S.contacts.length?S.contacts.slice(0,5).map(function(c){return"<div class='task'><div class='t'>"+esc(c.name)+"<div class='muted' style='font-size:13px'>"+esc(c.company)+"</div></div><span class='pill "+c.status+"'>"+c.status+"</span></div>"}).join(""):"<div class='empty'>No contacts yet.</div>")+"</div></div>";
+main.querySelectorAll(".task input").forEach(function(i){i.disabled=true})}
+
+/* settings */
+function vSettings(){
+var st=S.settings,cur=["USD","PHP","EUR","GBP","JPY","AUD","CAD","SGD"];
+main.innerHTML="<h1>Settings</h1><p class='sub'>Set up your business and enter your data here.</p>"+
+"<div class='panel set'><b>Business profile</b><label for='sb'>Business name</label><input id='sb' value='"+esc(st.business)+"'><label for='sc'>Currency</label><select id='sc'>"+cur.map(function(c){return"<option"+(c===st.currency?" selected":"")+">"+c+"</option>"}).join("")+"</select><div class='acts'><button class='btn' id='sp'>Save profile</button><span class='muted' id='sm'></span></div></div>"+
+"<div class='panel set'><b>Sales team and automation</b><p class='muted'>Alerts appear on the Dashboard.</p><label for='sr'>Sales reps (comma separated)</label><input id='sr' value='"+esc(st.reps.join(", "))+"'><label for='sa'>Contact attempts before a lead moves to nurture</label><input id='sa' type='number' min='1' value='"+st.maxAttempts+"'><label for='stg'>Monthly team revenue target</label><input id='stg' type='number' min='0' value='"+(st.target||0)+"'>"+AUTO.map(function(a){return"<label class='chk'><input type='checkbox' data-a='"+a[0]+"'"+(st.auto[a[0]]?" checked":"")+"> "+a[1]+"</label>"}).join("")+"<div class='acts'><button class='btn' id='sau'>Save automation</button><span class='muted' id='sam'></span></div></div>"+
+"<div class='panel set'><b>Enter data</b><p class='muted'>Add records one at a time.</p><div class='bar'><button class='btn' id='ac'>Add contact</button><button class='btn' id='ad'>Add deal</button><button class='btn' id='at'>Add task</button><button class='btn ghost' id='sd'>Load sample data</button></div><p class='muted'>"+S.contacts.length+" contacts, "+S.deals.length+" deals, and "+S.tasks.length+" tasks saved.</p></div>"+
+"<div class='panel set'><b>Import contacts</b><p class='muted'>Paste one contact per line: name, company, email, phone, status (new, contacted, qualified, customer, nurture, or inactive), source, campaign.</p><textarea id='imp' rows='5' placeholder='Maya Reyes, Harbor Coffee, maya@example.com, +63 917 555 0142, customer'></textarea><div class='acts'><button class='btn' id='ib'>Import contacts</button><span class='muted' id='im'></span></div></div>"+
+"<div class='panel set'><b>Backup and restore</b><p class='muted'>Copy this text to keep a backup. To restore, paste a backup into the box and choose Restore.</p><textarea id='bk' rows='5'></textarea><div class='acts'><button class='btn ghost' id='bc'>Copy backup</button><button class='btn ghost' id='br'>Restore from text</button><span class='muted' id='bm'></span></div></div>"+
+"<div class='panel set'><b>Clear all data</b><p class='muted'>Delete every contact, deal, and task saved in this browser.</p><button class='btn danger' id='cl'>Clear all data</button></div>";
+$("#bk").value=JSON.stringify(S);
+$("#sp").onclick=function(){S.settings.business=$("#sb").value.trim();S.settings.currency=$("#sc").value;save();$("#bname").textContent=S.settings.business||"SalesProCrm";$("#sm").textContent="Profile saved."};
+$("#sau").onclick=function(){S.settings.reps=$("#sr").value.split(",").map(function(x){return x.trim()}).filter(Boolean);S.settings.maxAttempts=Math.max(1,Number($("#sa").value)||5);S.settings.target=Math.max(0,Number($("#stg").value)||0);document.querySelectorAll("[data-a]").forEach(function(i){S.settings.auto[i.dataset.a]=i.checked?1:0});save();$("#sam").textContent="Automation saved."};
+$("#ac").onclick=function(){editContact()};$("#ad").onclick=function(){editDeal()};$("#at").onclick=function(){editTask()};$("#sd").onclick=function(){if(confirm("Replace all current data with sample data?")){sampleAll();save();route()}};
+$("#ib").onclick=function(){var n=0;$("#imp").value.split("\n").forEach(function(l){var p=l.split(",").map(function(x){return x.trim()});if(!p[0])return;var s=(p[4]||"lead").toLowerCase();if(s==="lead")s="new";if(["new","contacted","qualified","meeting","customer","nurture","inactive"].indexOf(s)<0)s="new";S.contacts.push({id:uid(),name:p[0],company:p[1]||"",email:p[2]||"",phone:p[3]||"",status:s,notes:"",created:today,attempts:0,meeting:"",source:p[5]||"",campaign:p[6]||""});n++});
+if(n){save();vSettings();$("#im").textContent=n+" contacts imported."}else{$("#im").textContent="Nothing to import. Add at least one line that starts with a name."}};
+$("#bc").onclick=function(){var t=$("#bk");t.select();try{document.execCommand("copy");$("#bm").textContent="Backup copied."}catch(e){$("#bm").textContent="Select the text and copy it manually."}};
+$("#br").onclick=function(){var o;try{o=JSON.parse($("#bk").value)}catch(e){}
+if(!o||!Array.isArray(o.contacts)||!Array.isArray(o.deals)||!Array.isArray(o.tasks)){$("#bm").textContent="That text isn’t a valid backup. Paste the full backup and try again.";return}
+if(!confirm("Replace all current data with this backup?"))return;
+if(!o.settings)o.settings={business:"",currency:"USD"};o.pipeV=2;S=o;save();route()};
+$("#cl").onclick=function(){if(confirm("Delete all contacts, deals, and tasks? This can’t be undone.")){var s=S.settings;S=seed();S.settings=s;save();route()}};
+}
+/* automation */
+var SYNC={"Contacted":"contacted","Qualified":"qualified","Meeting Scheduled":"meeting","Meeting Completed":"meeting","Won":"customer"},ORD=["new","contacted","qualified","meeting","customer"];
+var AUTO=[["assign","When a lead is created, assign it to a sales rep"],["qual","When a lead is qualified, create an outreach task"],["notify","When a follow-up date arrives, notify the owner"],["meeting","When a meeting is booked, update the lead status"],["onboard","When a deal is won, start customer onboarding"],["nurture","When a lead has no response after several attempts, move it to nurture"]];
+function isQ(c){return c.qualified||["qualified","meeting","customer"].indexOf(c.status)>-1}
+function lg(m){S.log.unshift({d:today,m:m});S.log=S.log.slice(0,30)}
+function ensure(){var s=S.settings;S.log=S.log||[];S.notices=S.notices||[];s.reps=s.reps||[];s.maxAttempts=s.maxAttempts||5;s.schedule=s.schedule||{freq:"off",email:"",last:""};s.auto=s.auto||{assign:1,qual:1,notify:1,meeting:1,onboard:1,nurture:1}}
+function cById(id){return S.contacts.filter(function(x){return x.id===id})[0]}
+function sweep(){
+ensure();var s=S.settings,A=s.auto,ch=0,reps=s.reps.length?s.reps:[sess||"Owner"];
+S.contacts.forEach(function(c){
+if(!c.created){c.created=today;ch=1}
+if(!c.owner&&A.assign){var n={};reps.forEach(function(r){n[r]=0});S.contacts.forEach(function(x){if(n[x.owner]!==undefined)n[x.owner]++});var r=reps.slice().sort(function(a,b){return n[a]-n[b]})[0];c.owner=r;lg("Assigned "+c.name+" to "+r);ch=1}
+if(c.attempts>0&&!c.firstContact){c.firstContact=today;if(c.status==="new")c.status="contacted";ch=1}
+if(c.meeting&&A.meeting&&["new","contacted","qualified"].indexOf(c.status)>-1){c.status="meeting";lg("Meeting booked for "+c.name+". Status updated");ch=1}
+if(isQ(c)&&!c.qTask&&A.qual){c.qTask=1;S.tasks.push({id:uid(),title:"Outreach: "+c.name,due:day(1),contactId:c.id,done:false});lg("Outreach task created for "+c.name);ch=1}
+if(A.nurture&&!c.nurtured&&!c.responded&&c.attempts>=s.maxAttempts&&!c.meeting&&["new","contacted"].indexOf(c.status)>-1){c.nurtured=1;c.status="nurture";lg(c.name+" had no response after "+c.attempts+" attempts. Moved to nurture");ch=1}});
+S.deals.forEach(function(d){if((d.stage==="Won"||d.stage==="Lost")&&!d.closed){d.closed=today;ch=1}if(!d.created){d.created=today;ch=1}
+if(d.synced!==d.stage){d.synced=d.stage;var cs=cById(d.contactId),to=SYNC[d.stage];if(cs){if(to&&ORD.indexOf(to)>ORD.indexOf(cs.status)){cs.status=to;lg(cs.name+" moved to "+to+" from pipeline stage "+SL(d.stage))}if(d.stage==="Meeting Scheduled"&&!cs.meeting)cs.meeting="booked";if(d.stage==="Meeting Completed")cs.meeting="held";if(d.stage==="Contacted"&&!cs.firstContact){cs.firstContact=today;cs.attempts=cs.attempts||1}}ch=1}
+if(d.stage==="Won"&&!d.onb&&A.onboard){d.onb=1;var c=cById(d.contactId),nm=c?c.name:d.title;["Onboarding kickoff: ","Send welcome pack: "].forEach(function(t,i){S.tasks.push({id:uid(),title:t+nm,due:day(i+1),contactId:d.contactId,done:false})});if(c){c.status="customer";c.qTask=1}lg("Deal won. Onboarding started for "+nm);ch=1}});
+S.tasks.forEach(function(t){if(!t.status){t.status=t.done?"completed":"pending";ch=1}if(!t.type){t.type=/^(First contact|Outreach)/.test(t.title)?"call":"general";ch=1}if(!t.priority){t.priority="medium";ch=1}if(!t.owner){var c1=cById(t.contactId);t.owner=(c1&&c1.owner)||sess||"";ch=1}
+if(!t.done&&t.rem>0&&t.due&&!t.remNotified&&A.notify&&Date.now()>=new Date(t.due+"T"+(t.time||"09:00")+":00").getTime()-t.rem*60000){t.remNotified=1;S.notices.unshift({id:uid(),m:"Reminder for "+t.owner+": "+t.title+" is due "+fdate(t.due)+(t.time?" at "+tfmt(t.time):""),d:t.due});S.notices=S.notices.slice(0,20);lg("Reminder sent to "+t.owner+": "+t.title);ch=1}});
+S.tasks.forEach(function(t){if(!t.done&&t.due&&t.due<=today&&!t.notified&&A.notify){t.notified=1;var c=cById(t.contactId),o=t.owner||(c&&c.owner)||sess||"Owner";S.notices.unshift({id:uid(),m:"Follow-up due for "+o+": "+t.title,d:t.due});S.notices=S.notices.slice(0,20);lg("Notified "+o+": "+t.title);ch=1}});
+var sc=s.schedule;if(sc&&sc.freq!=="off"){var gap={daily:1,weekly:7,monthly:30}[sc.freq];if(!sc.last||dd(sc.last,today)>=gap){sc.last=today;S.notices.unshift({id:uid(),m:"Your "+sc.freq+" sales report is ready"+(sc.email?" for "+sc.email:"")+". Open Reports to export it.",d:today});S.notices=S.notices.slice(0,20);lg("Scheduled "+sc.freq+" report prepared");ch=1}}
+if(ch)save()}
+/* dashboard */
+var per="30";
+function pct(a,b){return b?Math.round(a/b*100)+"%":"\u2014"}
+function dd(a,b){return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/864e5)}
+function vDash(){
+var cut=per==="all"?"":day(-Number(per));
+var L=S.contacts.filter(function(c){return!cut||(c.created||today)>=cut}),D=S.deals.filter(function(d){return!cut||(d.created||today)>=cut});
+var con=L.filter(function(c){return c.firstContact}),q=L.filter(isQ),
+mb=L.filter(function(c){return c.meeting==="booked"||c.meeting==="held"}),mh=L.filter(function(c){return c.meeting==="held"}),
+opp=L.filter(function(c){return S.deals.some(function(d){return d.contactId===c.id})}),
+won=D.filter(function(d){return d.stage==="Won"}),lost=D.filter(function(d){return d.stage==="Lost"}),
+ft=con.filter(function(c){return c.created}).map(function(c){return Math.max(0,dd(c.created,c.firstContact))}),
+avg=ft.length?(ft.reduce(function(a,b){return a+b},0)/ft.length).toFixed(1)+" days":"\u2014",
+od=S.tasks.filter(function(t){return!t.done&&t.due&&t.due<today}).sort(function(a,b){return a.due>b.due?1:-1});
+var K=[["Total new leads",L.length],["Leads contacted",con.length],["Contact rate",pct(con.length,L.length)],["Qualified leads",q.length],["Meetings booked / held",mb.length+" / "+mh.length],["Lead-to-opportunity rate",pct(opp.length,L.length)],["Deals won / lost",won.length+" / "+lost.length],["Avg time to first contact",avg],["Overdue follow-up tasks",od.length]];
+var F=[["New leads",L.length],["Contacted",con.length],["Qualified",q.length],["Meeting booked",mb.length],["Opportunity",opp.length],["Deal won",won.length]],mx=Math.max.apply(null,F.map(function(x){return x[1]}).concat(1));
+var PO=[["7","Last 7 days"],["30","Last 30 days"],["90","Last 90 days"],["all","All time"]];
+main.innerHTML="<h1>Dashboard</h1><p class='sub'>Key numbers that show whether your sales process is working.</p><div class='bar'><label for='per' class='muted'>Period</label><select id='per'>"+PO.map(function(o){return"<option value='"+o[0]+"'"+(o[0]===per?" selected":"")+">"+o[1]+"</option>"}).join("")+"</select></div>"+
+(S.contacts.length+S.deals.length+S.tasks.length?"":"<div class='panel' style='margin-bottom:16px'><b>Your CRM is empty.</b> <span class='muted'>Enter your first records in <a href='#settings'>Settings</a>, or add them from the Contacts, Pipeline, and Tasks tabs.</span></div>")+
+"<div class='stats'>"+K.map(function(k,i){return"<div class='panel stat'><b"+(i===8&&od.length?" class='late'":"")+">"+k[1]+"</b><span>"+k[0]+"</span></div>"}).join("")+"</div>"+
+"<div class='two'><div class='panel'><b>Lead funnel</b>"+F.map(function(f){return"<div class='fun'><span>"+f[0]+"</span><i style='width:"+Math.round(f[1]/mx*100)+"%'></i><span>"+f[1]+"</span></div>"}).join("")+"</div>"+
+"<div class='panel'><b>Follow-up alerts</b>"+(S.notices.length?S.notices.slice(0,6).map(function(n){return"<div class='note'><span>"+esc(n.m)+"</span><button class='btn ghost' data-n='"+n.id+"'>Dismiss</button></div>"}).join(""):"<div class='empty'>No alerts. You will see a message here when a follow-up date arrives.</div>")+"</div></div>"+
+"<div class='two'><div class='panel'><b>Overdue follow-ups</b>"+(od.length?od.slice(0,6).map(function(t){var c=cById(t.contactId);return"<div class='task'><div class='t'>"+esc(t.title)+"<div class='muted' style='font-size:13px'>"+esc(c?c.name+(c.owner?", "+c.owner:""):"No contact")+"</div></div><span class='late'>"+fdate(t.due)+"</span></div>"}).join(""):"<div class='empty'>Nothing overdue.</div>")+"</div>"+
+"<div class='panel'><b>Automation activity</b>"+(S.log.length?S.log.slice(0,6).map(function(l){return"<div class='note'><span>"+esc(l.m)+"</span><span class='muted' style='flex:none'>"+fdate(l.d)+"</span></div>"}).join(""):"<div class='empty'>Automated actions will be listed here.</div>")+"</div></div>";
+$("#per").onchange=function(){per=this.value;vDash()};
+main.onclick=function(e){var b=e.target.closest("[data-n]");if(b){S.notices=S.notices.filter(function(x){return x.id!==b.dataset.n});save();vDash()}}}
+/* reports */
+var RP={r:"quarter",from:"",to:"",owner:"",source:"",campaign:"",drill:null};
+function rng(){var m0=Math.floor((Number(today.slice(5,7))-1)/3)*3+1,f,t=today;
+if(RP.r==="today")f=today;else if(RP.r==="week")f=day(-((new Date().getDay()+6)%7));else if(RP.r==="month")f=today.slice(0,8)+"01";else if(RP.r==="quarter")f=today.slice(0,5)+(m0<10?"0":"")+m0+"-01";else{f=RP.from||today;t=RP.to||today}
+if(f>t)t=f;return[f,t]}
+function cm(c){return(!RP.owner||c.owner===RP.owner)&&(!RP.source||(c.source||"")===RP.source)&&(!RP.campaign||(c.campaign||"")===RP.campaign)}
+function uq(a){return a.filter(function(v,i){return v&&a.indexOf(v)===i}).sort()}
+function dupes(){var seen={},out=[];S.contacts.forEach(function(c){var k=(c.email||(c.name+"|"+(c.company||""))).toLowerCase().trim();if(!k)return;if(seen[k])out.push({id:c.id,keep:seen[k]});else seen[k]=c.id});return out}
+function scope(){var r=rng();
+return{r:r,L:S.contacts.filter(function(c){var d=c.created||today;return d>=r[0]&&d<=r[1]&&cm(c)}),
+D:S.deals.filter(function(d){var c=cById(d.contactId),x=d.closed||d.created||today;return x>=r[0]&&x<=r[1]&&(c?cm(c):!RP.owner&&!RP.source&&!RP.campaign)})}}
+function calc(L,D){var con=L.filter(function(c){return c.firstContact}),won=D.filter(function(d){return d.stage==="Won"}),
+ft=con.filter(function(c){return c.created}).map(function(c){return Math.max(0,dd(c.created,c.firstContact))});
+return{L:L,con:con,q:L.filter(isQ),mb:L.filter(function(c){return c.meeting}),mh:L.filter(function(c){return c.meeting==="held"}),
+opp:L.filter(function(c){return S.deals.some(function(d){return d.contactId===c.id})}),won:won,lost:D.filter(function(d){return d.stage==="Lost"}),
+rev:won.reduce(function(a,d){return a+d.value},0),avg:ft.length?(ft.reduce(function(a,b){return a+b},0)/ft.length).toFixed(1)+" days":"\u2014"}}
+function opt(a,v,all){return"<option value=''>"+all+"</option>"+a.map(function(x){return"<option"+(x===v?" selected":"")+">"+esc(x)+"</option>"}).join("")}
+function bars(rows,kind,fmt){var mx=Math.max.apply(null,rows.map(function(x){return x[1]}).concat(1));
+return rows.length?rows.map(function(x){var on=RP.drill&&RP.drill.k===kind&&RP.drill.v===x[0];
+return"<button class='fun b"+(on?" on":"")+"' data-k='"+kind+"' data-v='"+esc(x[0])+"'><span>"+esc(kind==="stage"?SL(x[0]):(x[0]||"Unknown"))+"</span><i style='width:"+Math.round(x[1]/mx*100)+"%'></i><span>"+(fmt?fmt(x[1]):x[1])+"</span></button>"}).join(""):"<div class='empty'>No data for these filters.</div>"}
+function tbl(h,rows){return rows.length?"<div class='tablewrap'><table><thead><tr>"+h.map(function(x){return"<th>"+x+"</th>"}).join("")+"</tr></thead><tbody>"+rows.slice(0,25).map(function(r){return"<tr>"+r.map(function(x){return"<td>"+esc(x)+"</td>"}).join("")+"</tr>"}).join("")+"</tbody></table></div>":"<div class='empty'>Nothing to show.</div>"}
+function trow(l,a,t){var p=t?Math.min(100,Math.round(a/t*100)):0;return"<div style='margin:10px 0'><div style='display:flex;justify-content:space-between;gap:10px'><span>"+esc(l)+"</span><span>"+money.format(a)+(t?" of "+money.format(t)+" ("+Math.round(a/t*100)+"%)":"")+"</span></div><div class='prog'><i style='width:"+p+"%'></i></div></div>"}
+function vReports(){
+ensure();var sc=scope(),r=sc.r,k=calc(sc.L,sc.D),s=S.settings,days=dd(r[0],r[1])+1,mt=(s.target||0)*days/30;
+var owners=uq(s.reps.concat(S.contacts.map(function(c){return c.owner}))),srcs=uq(S.contacts.map(function(c){return c.source})),cps=uq(S.contacts.map(function(c){return c.campaign}));
+var dr=RP.drill,Ld=sc.L,Dd=sc.D;
+if(dr){var mm=function(c){return dr.k==="owner"?c.owner===dr.v:(c.source||"")===dr.v};
+Ld=sc.L.filter(function(c){return dr.k==="stage"?sc.D.some(function(d){return d.contactId===c.id&&d.stage===dr.v}):mm(c)});
+Dd=sc.D.filter(function(d){if(dr.k==="stage")return d.stage===dr.v;var c=cById(d.contactId);return c&&mm(c)})}
+var sm={};sc.L.forEach(function(c){var g=c.source||"";sm[g]=(sm[g]||0)+1});
+var srcRows=Object.keys(sm).map(function(g){return[g,sm[g]]}).sort(function(a,b){return b[1]-a[1]});
+function revBy(o){return sc.D.filter(function(d){var c=cById(d.contactId);return d.stage==="Won"&&c&&c.owner===o}).reduce(function(a,d){return a+d.value},0)}
+var ownRows=owners.map(function(o){return[o,revBy(o)]}),stRows=STAGES.map(function(g){return[g,sc.D.filter(function(d){return d.stage===g}).length]});
+var F=[["New leads",k.L.length],["Contacted",k.con.length],["Qualified",k.q.length],["Meeting",k.mb.length],["Opportunity",k.opp.length],["Won",k.won.length]],bn=null;
+for(var i=1;i<F.length;i++){if(F[i-1][1]>0){var rt=Math.min(1,F[i][1]/F[i-1][1]);if(!bn||rt<bn.rt)bn={a:F[i-1][0],b:F[i][0],rt:rt}}}
+var unc=k.L.filter(function(c){return!c.firstContact}),dp=dupes(),od=S.tasks.filter(function(t){return!t.done&&t.due&&t.due<today}),tips=[];
+if(bn)tips.push("Biggest drop-off: "+bn.a+" to "+bn.b+" (only "+Math.round(bn.rt*100)+"% move on). Focus coaching on this step.");
+if(mt&&k.rev<mt)tips.push("Revenue is "+Math.round(k.rev/mt*100)+"% of the target for this period.");
+if(unc.length)tips.push(unc.length+" leads in this report have not been contacted yet.");
+if(od.length)tips.push(od.length+" follow-up tasks are overdue.");
+var PO=[["today","Today"],["week","This week"],["month","This month"],["quarter","This quarter"],["custom","Custom"]];
+var q=[["Missing email",S.contacts.filter(function(c){return!c.email}).length],["Missing source",S.contacts.filter(function(c){return!c.source}).length],["Deals with no value",S.deals.filter(function(d){return!d.value}).length],["Tasks with no due date",S.tasks.filter(function(t){return!t.due}).length],["Duplicate contacts",dp.length]];
+var KP=[["Total new leads",k.L.length],["Leads contacted",k.con.length],["Contact rate",pct(k.con.length,k.L.length)],["Qualified leads",k.q.length],["Meetings booked / held",k.mb.length+" / "+k.mh.length],["Lead-to-opportunity rate",pct(k.opp.length,k.L.length)],["Deals won / lost",k.won.length+" / "+k.lost.length],["Revenue won",money.format(k.rev)],["Avg time to first contact",k.avg]];
+var sch=s.schedule;
+main.innerHTML="<h1>Sales reports</h1><p class='sub'>"+fdate(r[0])+" to "+fdate(r[1])+". Filter, check, review, and export your sales numbers.</p>"+
+"<div class='bar'><select id='rr' aria-label='Date range'>"+PO.map(function(o){return"<option value='"+o[0]+"'"+(o[0]===RP.r?" selected":"")+">"+o[1]+"</option>"}).join("")+"</select>"+(RP.r==="custom"?"<input type='date' id='rf' value='"+r[0]+"' aria-label='From'><input type='date' id='rt' value='"+r[1]+"' aria-label='To'>":"")+"<select id='ro' aria-label='Owner'>"+opt(owners,RP.owner,"All owners")+"</select><select id='rs' aria-label='Lead source'>"+opt(srcs,RP.source,"All sources")+"</select><select id='rc' aria-label='Campaign'>"+opt(cps,RP.campaign,"All campaigns")+"</select></div>"+
+"<div class='panel rep'><b>1. Data check (collect, validate, clean)</b><p class='muted'>"+S.contacts.length+" contacts, "+S.deals.length+" deals, and "+S.tasks.length+" tasks collected.</p>"+q.map(function(x){return"<span class='chip"+(x[1]?" warn":"")+"'>"+x[0]+": "+x[1]+"</span>"}).join("")+(dp.length?" <button class='btn ghost' data-act='dupes'>Remove duplicates</button>":"")+"</div>"+
+"<div class='stats'>"+KP.map(function(x){return"<div class='panel stat'><b>"+x[1]+"</b><span>"+x[0]+"</span></div>"}).join("")+"</div>"+
+"<div class='two'><div class='panel'><b>Leads by source</b><p class='muted'>Select a bar to see the leads and deals behind it.</p>"+bars(srcRows,"source")+"</div><div class='panel'><b>Revenue won by owner</b>"+bars(ownRows,"owner",function(v){return money.format(v)})+"</div></div>"+
+"<div class='two'><div class='panel'><b>Deals by stage</b>"+bars(stRows,"stage")+"</div><div class='panel'><b>Lead funnel</b>"+F.map(function(f,i){return"<div class='fun'><span>"+f[0]+"</span><i style='width:"+Math.round(f[1]/Math.max(F[0][1],1)*100)+"%'></i><span>"+f[1]+"</span></div>"}).join("")+"</div></div>"+
+"<div class='panel' style='margin-top:16px'><b>Details"+(dr?": "+esc(dr.k)+" = "+esc(dr.v||"Unknown")+" ":"")+"</b>"+(dr?" <button class='btn ghost' data-k='"+dr.k+"' data-v='"+esc(dr.v)+"'>Clear selection</button>":"")+"<p class='muted'>Leads</p>"+tbl(["Name","Owner","Source","Status","Added"],Ld.map(function(c){return[c.name,c.owner,c.source,c.status,c.created]}))+"<p class='muted'>Deals</p>"+tbl(["Deal","Contact","Stage","Value"],Dd.map(function(d){return[d.title,cname(d.contactId),SL(d.stage),money.format(d.value)]}))+"</div>"+
+"<div class='two'><div class='panel'><b>Target versus actual</b>"+(mt?trow("Team",k.rev,mt)+ownRows.map(function(o){return trow(o[0],o[1],mt/Math.max(owners.length,1))}).join(""):"<div class='empty'>Set a monthly revenue target in Settings to compare results.</div>")+"</div>"+
+"<div class='panel'><b>Analysis and recommended actions</b>"+(tips.length?tips.map(function(t){return"<div class='note'><span>"+esc(t)+"</span></div>"}).join(""):"<div class='empty'>Add leads and deals to see insights.</div>")+"<div class='acts'>"+(unc.length?"<button class='btn' data-act='first'>Create first-contact tasks</button>":"")+"</div></div></div>"+
+"<div class='panel' style='margin-top:16px'><b>Export and schedule</b><div class='bar' style='margin-top:10px'><button class='btn' id='xc'>Export CSV</button>"+(window.XLSX?"<button class='btn ghost' id='xx'>Export Excel</button>":"")+(window.jspdf?"<button class='btn ghost' id='xp'>Export PDF</button>":"")+"<span class='muted' id='xm'></span></div>"+
+"<div class='bar'><label for='sf' class='muted'>Scheduled report for managers</label><select id='sf'>"+[["off","Off"],["daily","Daily"],["weekly","Weekly"],["monthly","Monthly"]].map(function(o){return"<option value='"+o[0]+"'"+(o[0]===sch.freq?" selected":"")+">"+o[1]+"</option>"}).join("")+"</select><input id='se' type='email' placeholder='Manager email' value='"+esc(sch.email)+"'><button class='btn ghost' id='ss'>Save schedule</button></div><p class='muted'>Scheduled reports appear as an alert on the Dashboard when due. Sending by email needs a backend service.</p></div>";
+function bind(id,key){var e=$(id);if(e)e.onchange=function(){RP[key]=this.value;RP.drill=null;vReports()}}
+bind("#rr","r");bind("#ro","owner");bind("#rs","source");bind("#rc","campaign");bind("#rf","from");bind("#rt","to");
+main.onclick=function(e){var b=e.target.closest("[data-k]");if(b){var kk=b.dataset.k,v=b.dataset.v;RP.drill=RP.drill&&RP.drill.k===kk&&RP.drill.v===v?null:{k:kk,v:v};vReports();return}
+var a=e.target.closest("[data-act]");if(a)act(a.dataset.act)};
+$("#ss").onclick=function(){S.settings.schedule={freq:$("#sf").value,email:$("#se").value.trim(),last:""};sweep();save();vReports()};
+var fn="sales-report-"+r[0]+"-to-"+r[1];
+$("#xc").onclick=function(){var e=expData();dl(fn+".csv",csv(e.sum.concat([[]],e.leads,[[]],e.deals)))};
+if($("#xx"))$("#xx").onclick=function(){var e=expData(),wb=XLSX.utils.book_new();[["Summary",e.sum],["Leads",e.leads],["Deals",e.deals]].forEach(function(p){XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(p[1]),p[0])});dl(fn+".xlsx",XLSX.write(wb,{bookType:"xlsx",type:"array"}))};
+if($("#xp"))$("#xp").onclick=function(){var e=expData(),doc=new jspdf.jsPDF(),y=14;
+var lines=e.sum.filter(function(x){return x.length}).map(function(x){return x.join(": ")}).concat(["","Leads"],e.leads.slice(1).map(function(x){return x[0]+", "+(x[1]||"-")+", "+x[5]+", "+(x[2]||"-")}),["","Deals"],e.deals.slice(1).map(function(x){return x[0]+", "+x[3]+", "+x[4]}));
+lines.forEach(function(l){if(y>280){doc.addPage();y=14}doc.text(String(l).slice(0,90),12,y);y+=7});dl(fn+".pdf",doc.output("arraybuffer"))}}
+function act(a){if(a==="first"){scope().L.filter(function(c){return!c.firstContact}).forEach(function(c){var t="First contact: "+c.name;if(!S.tasks.some(function(x){return x.title===t&&!x.done}))S.tasks.push({id:uid(),title:t,due:today,contactId:c.id,done:false})});lg("First-contact tasks created from Reports")}
+if(a==="dupes"){dupes().forEach(function(d){S.deals.forEach(function(x){if(x.contactId===d.id)x.contactId=d.keep});S.tasks.forEach(function(x){if(x.contactId===d.id)x.contactId=d.keep});S.contacts=S.contacts.filter(function(c){return c.id!==d.id})});lg("Duplicate contacts removed")}
+save();vReports()}
+function expData(){var sc=scope(),k=calc(sc.L,sc.D);
+var sum=[["Sales report"],["Period",sc.r[0]+" to "+sc.r[1]],["Owner",RP.owner||"All"],["Source",RP.source||"All"],["Campaign",RP.campaign||"All"],[],["Metric","Value"],["Total new leads",k.L.length],["Leads contacted",k.con.length],["Contact rate",pct(k.con.length,k.L.length)],["Qualified leads",k.q.length],["Meetings booked",k.mb.length],["Meetings held",k.mh.length],["Lead-to-opportunity rate",pct(k.opp.length,k.L.length)],["Deals won",k.won.length],["Deals lost",k.lost.length],["Revenue won",k.rev],["Avg time to first contact",k.avg]];
+return{sum:sum,leads:[["Name","Company","Owner","Source","Campaign","Status","Date added","First contacted","Attempts","Meeting"]].concat(sc.L.map(function(c){return[c.name,c.company,c.owner,c.source,c.campaign,c.status,c.created,c.firstContact,c.attempts,c.meeting]})),
+deals:[["Deal","Contact","Owner","Stage","Value","Date"]].concat(sc.D.map(function(d){var c=cById(d.contactId);return[d.title,c?c.name:"",c?c.owner:"",SL(d.stage),d.value,d.closed||d.created]}))}}
+function csv(rows){var q=String.fromCharCode(34);return rows.map(function(r){return r.map(function(v){v=String(v==null?"":v);return v.indexOf(q)>-1||/[,\n]/.test(v)?q+v.split(q).join(q+q)+q:v}).join(",")}).join("\r\n")}
+function dl(name,data){var el=$("#xm");function say(t){if(el)el.textContent=t}
+if(!window.claude||!claude.use){var bl=new Blob([data]),a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download=name;document.body.appendChild(a);a.click();a.remove();say("Saved "+name);return}if(false){say("Saving files isn\u2019t available in this view.");return}
+claude.use("downloads").then(function(d){if(!d){say("Saving files isn\u2019t available in this view.");return}return d.save({filename:name,data:data}).then(function(){say("Saved "+name)})}).catch(function(e){say(e&&e.code==="declined"?"Export cancelled.":"Export failed. Try again.")})}
+/* follow-up tasks */
+var TT={call:"Phone Call",email:"Email",linkedin:"LinkedIn",meeting:"Meeting",proposal:"Proposal Follow-up",general:"General Task"},
+TO=Object.keys(TT).map(function(k){return{v:k,l:TT[k]}}),
+SN={pending:"Pending",progress:"In Progress",completed:"Completed",overdue:"Overdue",cancelled:"Cancelled"},PL={high:"High",medium:"Medium",low:"Low"},TF={owner:"",status:""};
+function tfmt(h){var p=h.split(":"),n=Number(p[0]);return(n%12||12)+":"+p[1]+" "+(n<12?"AM":"PM")}
+function tstat(t){return t.status==="completed"?"completed":t.status==="cancelled"?"cancelled":(t.due&&t.due<today)?"overdue":(t.status||"pending")}
+function editTask(id){
+var t=id?S.tasks.filter(function(x){return x.id===id})[0]:{type:"call",due:today,time:"",priority:"medium",rem:0,status:"pending",contactId:"",owner:""};
+var F=[{k:"title",label:"Task title",req:1},{k:"contactId",label:"Related lead",type:"select",options:contactOpts()},{k:"type",label:"Task type",type:"select",options:TO},{k:"owner",label:"Assigned to (defaults to the lead owner)"},{k:"due",label:"Due date",type:"date"},{k:"time",label:"Due time",type:"time"},
+{k:"priority",label:"Priority",type:"select",options:[{v:"high",l:"High"},{v:"medium",l:"Medium"},{v:"low",l:"Low"}]},
+{k:"rem",label:"Reminder",type:"select",options:[{v:"0",l:"No reminder"},{v:"15",l:"15 minutes before"},{v:"30",l:"30 minutes before"},{v:"60",l:"1 hour before"},{v:"1440",l:"1 day before"}]},
+{k:"desc",label:"Description",type:"textarea"},{k:"status",label:"Status",type:"select",options:[{v:"pending",l:"Pending"},{v:"progress",l:"In Progress"},{v:"completed",l:"Completed"},{v:"cancelled",l:"Cancelled"}]}];
+modal(id?"Edit task":"Add follow-up task",F,t,function(o){o.rem=Number(o.rem)||0;o.done=o.status==="completed"||o.status==="cancelled";if(!o.owner){var c=cById(o.contactId);o.owner=(c&&c.owner)||""}
+if(id){Object.assign(t,o);t.remNotified=0}else{o.id=uid();S.tasks.push(o)}save();route()},
+id?function(){S.tasks=S.tasks.filter(function(x){return x.id!==id});save();route()}:null)}
+function completeTask(id){
+var t=S.tasks.filter(function(x){return x.id===id})[0];if(!t)return;
+modal("Complete: "+t.title,[{k:"outcome",label:"Outcome",type:"select",options:["Connected","No answer","Left message","Interested","Not interested","Meeting booked","Proposal reviewed","Other"]},{k:"note",label:"Notes",type:"textarea"},{k:"nextTitle",label:"Next action (optional)"},{k:"nextType",label:"Next action type",type:"select",options:TO},{k:"nextDue",label:"Next action due date",type:"date"}],{outcome:"Connected",nextType:"call",nextDue:day(3)},function(o){
+t.status="completed";t.done=true;t.outcome=o.outcome;t.note=o.note;t.completedAt=today;
+var c=cById(t.contactId);
+if(c){if(["call","email","linkedin"].indexOf(t.type)>-1)c.attempts=(c.attempts||0)+1;if(["Connected","Interested","Meeting booked","Proposal reviewed"].indexOf(o.outcome)>-1)c.responded=1;if(o.outcome==="Meeting booked"&&!c.meeting)c.meeting="booked"}
+if(o.nextTitle)S.tasks.push({id:uid(),title:o.nextTitle,type:o.nextType,due:o.nextDue||day(3),time:"",priority:t.priority||"medium",rem:0,owner:t.owner,contactId:t.contactId,done:false,status:"pending",desc:""});
+lg("Task completed: "+t.title+" ("+o.outcome+")"+(o.nextTitle?". Next action scheduled":""));save();route()},null)}
+function vTasks(){
+var all=S.tasks.filter(function(t){return!TF.owner||t.owner===TF.owner}),owners=uq(S.settings.reps.concat(S.tasks.map(function(t){return t.owner}))),
+list=all.filter(function(t){return!TF.status||tstat(t)===TF.status}).sort(function(a,b){return(a.done-b.done)||((a.due+(a.time||""))>(b.due+(b.time||""))?1:-1)}),
+td=all.filter(function(t){return t.due===today}).sort(function(a,b){return(a.time||"99")>(b.time||"99")?1:-1}),
+n=function(s){return all.filter(function(t){return tstat(t)===s}).length};
+var rows=list.map(function(t){var c=cById(t.contactId),st=tstat(t);
+return"<tr data-id='"+t.id+"' tabindex='0'><td><b>"+esc(t.title)+"</b><div class='muted' style='font-size:13px'>"+esc(TT[t.type]||"")+(t.outcome?". Outcome: "+esc(t.outcome):"")+"</div></td><td>"+esc(c?c.name:(lfind(t.leadId)?lname(lfind(t.leadId)):"No lead"))+"<div class='muted' style='font-size:13px'>"+esc(c?c.company:"")+"</div></td><td>"+esc(t.owner||"")+"</td><td>"+(t.due?fdate(t.due)+(t.time?" "+tfmt(t.time):""):"")+"</td><td><span class='pill "+(t.priority||"medium")+"'>"+PL[t.priority||"medium"]+"</span></td><td><span class='pill "+st+"'>"+SN[st]+"</span></td><td><div class='rowbtn'>"+(t.done?"":(t.status==="progress"?"":"<button class='btn ghost' data-a='start' data-id='"+t.id+"'>Start</button>")+"<button class='btn' data-a='done' data-id='"+t.id+"'>Complete</button>")+"</div></td></tr>"}).join("");
+main.innerHTML="<h1>My Tasks</h1><p class='sub'>"+new Date().toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})+"</p>"+
+"<div class='bar'><select id='fo' aria-label='Assigned to'>"+opt(owners,TF.owner,"All owners")+"</select><select id='fs' aria-label='Status'>"+[["","All statuses"],["pending","Pending"],["progress","In Progress"],["completed","Completed"],["overdue","Overdue"],["cancelled","Cancelled"]].map(function(o){return"<option value='"+o[0]+"'"+(o[0]===TF.status?" selected":"")+">"+o[1]+"</option>"}).join("")+"</select><span class='grow'></span><button class='btn' id='add'>Add task</button></div>"+
+"<div class='stats'>"+[["Total tasks",all.length],["Completed",n("completed")],["Pending",n("pending")+n("progress")],["Overdue",n("overdue")]].map(function(x,i){return"<div class='panel stat'><b"+(i===3&&x[1]?" class='late'":"")+">"+x[1]+"</b><span>"+x[0]+"</span></div>"}).join("")+"</div>"+
+"<div class='panel' style='margin-bottom:16px'><b>Today\u2019s follow-up activities</b>"+(td.length?td.map(function(t){var c=cById(t.contactId),st=tstat(t);return"<div class='task'><span style='width:76px'>"+(t.time?tfmt(t.time):"Any time")+"</span><span class='pill "+st+"'>"+SN[st]+"</span><div class='t' data-id='"+t.id+"'>"+esc(TT[t.type]||"Task")+" \u2013 "+esc(c?c.name:t.title)+"<div class='muted' style='font-size:13px'>"+esc(c?c.company:"")+"</div></div></div>"}).join(""):"<div class='empty'>No follow-ups due today.</div>")+"</div>"+
+"<div class='panel tablewrap'><table><thead><tr><th>Task</th><th>Lead</th><th>Assigned to</th><th>Due</th><th>Priority</th><th>Status</th><th></th></tr></thead><tbody>"+(rows||"<tr><td colspan='7' class='empty'>No tasks match. Add a follow-up task to get started.</td></tr>")+"</tbody></table></div>";
+$("#fo").onchange=function(){TF.owner=this.value;vTasks()};$("#fs").onchange=function(){TF.status=this.value;vTasks()};$("#add").onclick=function(){editTask()};
+main.onclick=function(e){var b=e.target.closest("[data-a]");if(b){if(b.dataset.a==="start"){var t=S.tasks.filter(function(x){return x.id===b.dataset.id})[0];t.status="progress";save();vTasks()}else completeTask(b.dataset.id);return}
+var r=e.target.closest("[data-id]");if(r)editTask(r.dataset.id)}}
+/* lead management */
+var LS=["New","Assigned","Contacted","Engaged","Qualified","Follow-up","Meeting Booked","Converted","Disqualified","Unresponsive","Nurturing"],
+LSRC=["LinkedIn","Website","Referral","Outbound","Inbound inquiry","Import","Manual entry"],
+LCR=[["fit","Company fit (ICP)"],["industry","Target industry"],["dm","Decision maker"],["need","Business need"],["budget","Budget"],["timeline","Timeline"]],
+LT=["Call","Email","LinkedIn","Meeting","Note"],DQ=["Not a fit for ICP","No budget","Wrong industry","No business need","Not a decision maker","Other"],
+LF={q:"",st:"",src:"",own:"",arch:"0"},
+LFLOW=[["1. Lead capture","Website, LinkedIn, referrals, imports, manual entry","47,111,200"],["2. Registration","Contact details, company, title, source, industry","47,111,200"],["3. Data validation","Email, phone, company, duplicate check","100,117,122"],["4. Qualification","Fit, need, authority, budget, timeline","168,106,10"],["5. Decision","Qualified, or Disqualified with a reason","168,106,10"],["6. Assignment and outreach","Owner assigned; calls, emails, LinkedIn","47,111,200"],["7. Follow-up and meeting","Track responses, book discovery meetings","110,80,200"],["8. Convert to opportunity","Linked contact and deal in the pipeline","47,125,79"]];
+function lname(l){return((l.first||"")+" "+(l.last||"")).trim()}
+function lscore(l){var n=0,c=l.crit||{};LCR.forEach(function(x){n+=c[x[0]]==="yes"?1:c[x[0]]==="maybe"?.5:0});return Math.round(n/LCR.length*100)}
+function lact(l,t,n){l.acts=l.acts||[];l.acts.unshift({d:today,t:t,n:n||""})}
+function lpill(s){return"<span class='pill "+s.toLowerCase().replace(/[^a-z]/g,"")+"'>"+esc(s)+"</span>"}
+function lfind(id){return(S.leads||[]).filter(function(x){return x.id===id})[0]}
+function lnote(m){ensure();S.notices.unshift({id:uid(),m:m,d:today});S.notices=S.notices.slice(0,20)}
+function ldup(l){return(S.leads||[]).filter(function(x){return x.id!==l.id&&!x.arch&&((l.email&&(x.email||"").toLowerCase()===l.email.toLowerCase())||(lname(x).toLowerCase()===lname(l).toLowerCase()&&(x.company||"").toLowerCase()===(l.company||"").toLowerCase()))})}
+function lowner(){var r=S.settings.reps&&S.settings.reps.length?S.settings.reps:[sess||"Owner"],n={};r.forEach(function(x){n[x]=0});S.leads.forEach(function(x){if(n[x.owner]!==undefined)n[x.owner]++});return r.slice().sort(function(a,b){return n[a]-n[b]})[0]}
+function ftask(l,type,pre,d,force){if(!force&&S.tasks.some(function(t){return t.leadId===l.id&&!t.done}))return;S.tasks.push({id:uid(),title:pre+lname(l),type:type,due:day(d),time:"",priority:"medium",rem:0,owner:l.owner||"",contactId:l.cid||"",done:false,status:"pending",desc:"",leadId:l.id})}
+function addLead(o){ensure();S.leads=S.leads||[];var l=Object.assign({id:uid(),created:today,attempts:0,acts:[],crit:{},status:"New"},o);
+if(!l.owner)l.owner=lowner();if(!l.source)l.source="Manual entry";
+if(l.owner&&l.status==="New")l.status="Assigned";
+lact(l,"Created","Lead added from "+(l.source||"unknown source"));
+var d=ldup(l);if(d.length){lact(l,"Duplicate","Possible duplicate of "+lname(d[0]));lnote("Possible duplicate lead: "+lname(l))}
+if(l.owner){lnote("Lead assigned to "+l.owner+": "+lname(l));lg("Lead "+lname(l)+" added and assigned to "+l.owner)}else lg("Lead "+lname(l)+" added");
+S.leads.unshift(l);ftask(l,"call","First contact: ",1);return l}
+function setStatus(l,s){if(s==="Converted"&&!l.did)return;l.status=s;lact(l,"Status","Status changed to "+s);
+if(s==="Contacted"){if(!l.firstContact)l.firstContact=today;ftask(l,"call","Follow-up: ",2)}
+if(s==="Follow-up")ftask(l,"call","Follow-up: ",3);
+if(s==="Qualified"){l.qualified=1;lg("Lead "+lname(l)+" qualified. Conversion enabled")}
+if(s==="Meeting Booked"){l.meeting="booked";lact(l,"Meeting","Discovery meeting booked");ftask(l,"meeting","Discovery meeting: ",1,1);lg("Meeting booked for "+lname(l))}
+if(s==="Nurturing")lg(lname(l)+" moved to nurturing")}
+var LFM=[{k:"first",label:"First name",req:1},{k:"last",label:"Last name"},{k:"company",label:"Company name",req:1},{k:"title",label:"Job title"},{k:"email",label:"Email address",type:"email"},{k:"phone",label:"Phone"},{k:"industry",label:"Industry"},{k:"source",label:"Lead source",type:"select",options:LSRC},{k:"status",label:"Lead status",type:"select",options:LS},{k:"owner",label:"Owner (blank = auto-assign)"},{k:"tags",label:"Tags (comma separated)"},{k:"notes",label:"Lead notes",type:"textarea"}];
+function reopen(id){setTimeout(function(){showLead(id)},0)}
+function editLead(id){var l=id?lfind(id):{status:"New",source:"LinkedIn"};
+modal(id?"Edit lead":"Add new lead",LFM,l,function(o){var ns=o.status;
+if(id){var p=l.status;o.status=p;Object.assign(l,o);if(!l.owner)l.owner=lowner();if(!l.source)l.source="Manual entry";if(ns!==p)setStatus(l,ns)}else{o.status="New";var n=addLead(o);if(ns!=="New"&&ns!=="Assigned")setStatus(n,ns)}
+save();route();if(id)reopen(id)},null)}
+function logAct(id){var l=lfind(id);
+modal("Log activity: "+lname(l),[{k:"type",label:"Activity",type:"select",options:LT},{k:"outcome",label:"Outcome",type:"select",options:["No answer","Left message","Connected","Interested","Not interested"]},{k:"note",label:"Notes",type:"textarea"}],{},function(o){
+lact(l,o.type,o.outcome+(o.note?": "+o.note:""));
+var real=o.type!=="Note"&&o.type!=="Meeting",hit=["Connected","Interested"].indexOf(o.outcome)>-1;
+if(real)l.attempts=(l.attempts||0)+1;if(hit)l.responded=1;
+if(real&&["New","Assigned"].indexOf(l.status)>-1)setStatus(l,"Contacted");
+if(hit&&["Contacted","Follow-up","Nurturing","Unresponsive"].indexOf(l.status)>-1)setStatus(l,"Engaged");
+else if(real&&!hit&&!l.responded&&["Contacted","Follow-up"].indexOf(l.status)>-1){if(l.attempts>=(S.settings.maxAttempts||5)){setStatus(l,"Unresponsive");setStatus(l,"Nurturing")}else setStatus(l,"Follow-up")}
+save();route();reopen(id)},null)}
+function dqLead(id){var l=lfind(id);modal("Disqualify lead",[{k:"reason",label:"Reason",type:"select",options:DQ}],{},function(o){l.reason=o.reason;setStatus(l,"Disqualified");save();route();reopen(id)},null)}
+function convLead(id){var l=lfind(id);
+modal("Convert to opportunity",[{k:"title",label:"Opportunity name"},{k:"value",label:"Estimated value",type:"number"},{k:"stage",label:"Pipeline stage",type:"select",options:STAGES.slice(0,7).map(function(g){return{v:g,l:SL(g)}})}],{title:(l.company||lname(l))+" opportunity",stage:"Qualified"},function(o){
+var c={id:uid(),name:lname(l),company:l.company||"",email:l.email||"",phone:l.phone||"",status:"qualified",owner:l.owner,source:l.source,campaign:"",created:l.created,attempts:l.attempts||0,firstContact:l.firstContact||"",responded:l.responded||0,meeting:l.meeting||"",notes:l.notes||"",qTask:1,qualified:1};
+S.contacts.unshift(c);var d={id:uid(),title:o.title||"Opportunity",contactId:c.id,value:Number(o.value)||0,stage:o.stage,created:today};S.deals.push(d);
+l.cid=c.id;l.did=d.id;setStatus(l,"Converted");lact(l,"Converted","Opportunity created: "+d.title+" ("+SL(d.stage)+")");lg("Lead "+lname(l)+" converted. Opportunity created");
+S.tasks.forEach(function(t){if(t.leadId===l.id)t.contactId=c.id});save();route();reopen(id)},null)}
+function showLead(id){var l=lfind(id);if(!l)return;var sc=lscore(l),d=ldup(l),conv=l.status==="Qualified",
+meta=[l.email,l.phone,l.source&&"Source: "+l.source,l.industry&&"Industry: "+l.industry,"Owner: "+(l.owner||"Unassigned"),"Next: "+lnx(l),"Added "+fdate(l.created)].filter(Boolean).map(esc).join(" &middot; ");
+var h="<h2>"+esc(lname(l))+" "+lpill(l.status)+"</h2><p class='muted' style='margin:-8px 0 8px'>"+esc([l.title,l.company].filter(Boolean).join(" at "))+"</p>"+(d.length?"<span class='chip warn'>Possible duplicate of "+esc(lname(d[0]))+"</span>":"")+"<div class='muted' style='font-size:14px'>"+meta+"</div>"+
+(l.tags?"<div style='margin-top:8px'>"+l.tags.split(",").map(function(t){return t.trim()&&"<span class='chip'>"+esc(t.trim())+"</span>"}).join("")+"</div>":"")+(l.notes?"<p>"+esc(l.notes)+"</p>":"")+(l.reason?"<p class='late'>Disqualified: "+esc(l.reason)+"</p>":"")+
+"<label>Qualification criteria. Lead score "+sc+"%</label><div class='prog'><i style='width:"+sc+"%'></i></div><div class='qg'>"+LCR.map(function(c){return"<div><span class='muted' style='font-size:13px'>"+c[1]+"</span><select data-c='"+c[0]+"'>"+[["","Unknown"],["yes","Yes"],["maybe","Partly"],["no","No"]].map(function(o){return"<option value='"+o[0]+"'"+((l.crit&&l.crit[c[0]]||"")===o[0]?" selected":"")+">"+o[1]+"</option>"}).join("")+"</select></div>"}).join("")+"</div>"+
+"<label>Activity history</label><div style='max-height:170px;overflow:auto'>"+((l.acts||[]).length?l.acts.slice(0,15).map(function(a){return"<div class='note'><span><b>"+esc(a.t)+"</b> "+esc(a.n)+"</span><span class='muted' style='flex:none'>"+fdate(a.d)+"</span></div>"}).join(""):"<div class='empty'>No activity yet.</div>")+"</div>"+
+"<div class='acts' style='flex-wrap:wrap'><button class='btn' data-a='log'>Log activity</button><button class='btn ghost' data-a='edit'>Edit</button>"+(["Qualified","Converted","Disqualified"].indexOf(l.status)<0?"<button class='btn ghost' data-a='qual'>Mark qualified</button>":"")+(l.status!=="Disqualified"&&l.status!=="Converted"?"<button class='btn ghost' data-a='dq'>Disqualify</button>":"")+(conv?"<button class='btn' data-a='conv'>Convert to opportunity</button>":"")+"<span class='grow'></span><button class='btn danger' data-a='arch'>"+(l.arch?"Restore":"Archive")+"</button><button class='btn ghost' data-a='x'>Close</button></div>"+(l.status==="Converted"?"<p class='muted'>Converted. The contact and opportunity are in Contacts and Pipeline.</p>":"");
+dlg.className="wide";dlg.innerHTML=h;
+dlg.onchange=function(e){var s=e.target.closest("[data-c]");if(s){l.crit=l.crit||{};l.crit[s.dataset.c]=s.value;save();showLead(id)}};
+dlg.onclick=function(e){var b=e.target.closest("[data-a]");if(!b)return;var a=b.dataset.a;dlg.close();
+if(a==="log")logAct(id);else if(a==="edit")editLead(id);else if(a==="dq")dqLead(id);else if(a==="conv")convLead(id);
+else if(a==="qual"){setStatus(l,"Qualified");save();route();reopen(id)}
+else if(a==="arch"){l.arch=l.arch?0:1;lact(l,"Archive",l.arch?"Lead archived":"Lead restored");save();route()}};
+if(!dlg.open)dlg.showModal()}
+function sampleLeads(){[["Sarah","Thompson","ExamplePay Ltd.","Head of Payments","LinkedIn","Qualified"],["Michael","Santos","GlobalTrade Inc.","CEO","Website","New"],["Emma","Johnson","Digital Commerce","Business Development Director","Referral","Contacted"],["David","Wilson","Fintech Solutions","Managing Director","Outbound","Meeting Booked"]].forEach(function(r){var l=addLead({first:r[0],last:r[1],company:r[2],title:r[3],source:r[4],email:r[0].toLowerCase()+"@"+r[2].toLowerCase().replace(/[^a-z]/g,"")+".example"});if(r[5]!=="New")setStatus(l,r[5])});save();route()}
+function impLeads(){modal("Import leads",[{k:"t",label:"One per line: first, last, company, title, email, phone, source, status",type:"textarea"}],{},function(o){var n=0;ensure();
+o.t.split("\n").forEach(function(r){var p=r.split(",").map(function(x){return x.trim()});if(!p[0])return;var st=LS.indexOf(p[7])>-1?p[7]:"New";var l=addLead({first:p[0],last:p[1]||"",company:p[2]||"",title:p[3]||"",email:p[4]||"",phone:p[5]||"",source:p[6]||"Import"});if(st!=="New"&&st!=="Assigned")setStatus(l,st);n++});
+save();route();if(n)lnote(n+" leads imported")},null)}
+function lnext(l){return S.tasks.filter(function(t){return t.leadId===l.id&&!t.done}).sort(function(a,b){return a.due>b.due?1:-1})[0]}
+function lnx(l){var t=lnext(l);return t?t.title+" ("+fdate(t.due)+")":(["Converted","Disqualified"].indexOf(l.status)>-1?"Not required":"No follow-up scheduled")}
+function ensureNext(){var ch=0,cfg={"Meeting Booked":["meeting","Discovery meeting: ",1],"Nurturing":["email","Nurture check-in: ",14],"Unresponsive":["email","Re-engage: ",30]};
+S.leads.forEach(function(l){if(l.arch||["Converted","Disqualified"].indexOf(l.status)>-1||lnext(l))return;var c=cfg[l.status]||["call","Follow-up: ",1];ftask(l,c[0],c[1],c[2]);ch=1});if(ch)save()}
+function vLeads(){S.leads=S.leads||[];ensure();ensureNext();
+var live=S.leads.filter(function(l){return!l.arch}),n=function(f){return live.filter(f).length},mo=today.slice(0,8)+"01",
+ct=n(function(l){return l.attempts>0||["Contacted","Engaged","Qualified","Follow-up","Meeting Booked","Converted"].indexOf(l.status)>-1}),
+ql=n(function(l){return["Qualified","Meeting Booked","Converted"].indexOf(l.status)>-1||l.qualified}),mb=n(function(l){return l.status==="Meeting Booked"||l.meeting}),
+owners=uq(S.settings.reps.concat(S.leads.map(function(l){return l.owner})));
+var K=[["Total leads",live.length,n(function(l){return l.created>=mo})+" added this month"],["Qualified leads",ql,pct(ql,live.length)+" qualification rate"],["Contacted",ct,"Leads reached"],["Meetings booked",mb,"Discovery meetings"]];
+main.innerHTML="<h1>Lead Management</h1><p class='sub'>Manage and track your sales prospects.</p>"+
+"<div class='stats'>"+K.map(function(k){return"<div class='panel stat'><b>"+k[1]+"</b><span>"+k[0]+"</span><br><span>"+k[2]+"</span></div>"}).join("")+"</div>"+
+"<details class='panel' style='margin-bottom:16px'><summary><b>Lead workflow</b> <span class='muted'>(capture to opportunity)</span></summary><div class='flow'>"+LFLOW.map(function(f){return"<div style='background:rgba("+f[2]+",.13)'><b>"+f[0]+"</b><span class='muted'>"+f[1]+"</span></div>"}).join("")+"</div></details>"+
+"<div class='panel'><div class='bar'><b>Lead directory</b><span class='muted' id='lc'></span><span class='grow'></span><button class='btn' id='la'>Add lead</button><button class='btn ghost' id='li'>Import</button><button class='btn ghost' id='le'>Export CSV</button><span class='muted' id='xm'></span></div>"+
+"<div class='bar'><input type='search' id='lq' placeholder='Search leads...' value='"+esc(LF.q)+"' aria-label='Search leads'><select id='ls' aria-label='Status'>"+"<option value=''>All statuses</option>"+LS.map(function(s){return"<option"+(s===LF.st?" selected":"")+">"+s+"</option>"}).join("")+"</select><select id='lr' aria-label='Source'>"+opt(LSRC,LF.src,"All sources")+"</select><select id='lo' aria-label='Owner'>"+opt(owners,LF.own,"All owners")+"</select><select id='lv' aria-label='View'><option value='0'>Active</option><option value='1'"+(LF.arch==="1"?" selected":"")+">Archived</option></select><button class='btn ghost' id='lmy'>My leads</button><button class='btn ghost' id='lall'>All team</button></div>"+
+"<div class='tablewrap'><table><thead><tr><th>Lead</th><th>Company</th><th>Source</th><th>Owner</th><th>Score</th><th>Status</th><th>Next follow-up</th></tr></thead><tbody id='lrows'></tbody></table></div></div>";
+var CONT=["Contacted","Engaged","Qualified","Follow-up","Meeting Booked","Converted"],qn=live.filter(function(l){return l.status==="Qualified"}).length,cv=live.filter(function(l){return l.status==="Converted"}).length,OT=S.tasks.filter(function(t){return t.leadId&&!t.done}).length,
+TMH=owners.length?"<div class='panel' style='margin-top:16px'><b>Team performance</b><p class='muted'>For managers. Select a rep to see only their leads.</p><div class='tablewrap'><table><thead><tr><th>Rep</th><th>Leads</th><th>Contacted</th><th>Qualified</th><th>Meetings</th><th>Converted</th><th>Overdue follow-ups</th></tr></thead><tbody>"+owners.map(function(o){var L=live.filter(function(l){return l.owner===o}),f=function(a){return L.filter(function(l){return a.indexOf(l.status)>-1}).length},od=L.filter(function(l){var t=lnext(l);return t&&t.due<today}).length;return"<tr data-o='"+esc(o)+"' tabindex='0'><td><b>"+esc(o)+"</b></td><td>"+L.length+"</td><td>"+L.filter(function(l){return l.attempts>0||CONT.indexOf(l.status)>-1}).length+"</td><td>"+f(["Qualified","Meeting Booked","Converted"])+"</td><td>"+f(["Meeting Booked"])+"</td><td>"+f(["Converted"])+"</td><td class='"+(od?"late":"")+"'>"+od+"</td></tr>"}).join("")+"</tbody></table></div></div>":"",
+box=function(h,c,t,s,x){return"<a href='"+h+"' class='mod' style='background:rgba("+c+",.13)'><b>"+t+"</b><span class='muted'>"+s+"</span><span class='muted'>"+x+"</span></a>"},
+CONN="<div class='panel' style='margin-top:16px'><b>How Lead Management connects with other modules</b><div class='modg'>"+box("#leads","47,111,200","Lead Management","Capture, validate, qualify, and assign prospects",live.length+" active leads")+"<div class='ar'>&darr;</div><div class='mod2'>"+box("#tasks","168,106,10","Follow-up Tasks","Calls, emails, reminders",OT+" open lead follow-ups")+box("#pipeline","110,80,200","Sales Pipeline","Qualified opportunities",cv+" converted from leads")+"</div><div class='ar'>&darr;</div>"+box("#reports","47,125,79","Sales Reports","Measure lead generation and conversion performance",pct(cv,live.length)+" lead-to-opportunity rate")+"<div class='ar'>&darr;</div>"+box("#settings","100,117,122","Settings","Manage users, permissions, statuses, and automation",S.settings.reps.length+" reps, "+LS.length+" lead statuses")+"</div><p class='muted'>Every lead has an owner, source, status, company, activity history, and a next follow-up action. When qualified, it converts straight into the Sales Pipeline.</p></div>";
+main.insertAdjacentHTML("beforeend",TMH+CONN);
+if(qn){main.querySelector(".stats").insertAdjacentHTML("afterend","<div class='panel' style='margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap'><span style='flex:1'><b>"+qn+" qualified "+(qn>1?"leads are":"lead is")+" ready to convert</b> <span class='muted'>into the Sales Pipeline.</span></span><button class='btn' id='lqv'>View qualified leads</button></div>");$("#lqv").onclick=function(){LF.st="Qualified";vLeads()}}
+main.querySelectorAll("[data-o]").forEach(function(r){r.onclick=function(){LF.own=r.dataset.o;vLeads()}});
+function rows(){var q=LF.q.toLowerCase(),l=S.leads.filter(function(x){return(LF.arch==="1")===!!x.arch&&(!LF.st||x.status===LF.st)&&(!LF.src||x.source===LF.src)&&(!LF.own||x.owner===LF.own)&&[lname(x),x.company,x.email,x.title,x.tags].join(" ").toLowerCase().indexOf(q)>-1});
+$("#lc").textContent=l.length+" records";
+$("#lrows").innerHTML=l.length?l.map(function(x){return"<tr data-id='"+x.id+"' tabindex='0'><td><b>"+esc(lname(x))+"</b><div class='muted' style='font-size:13px'>"+esc(x.title)+"</div>"+(ldup(x).length?"<span class='chip warn'>Possible duplicate</span>":"")+"</td><td>"+esc(x.company)+"</td><td>"+esc(x.source)+"</td><td>"+esc(x.owner||"Unassigned")+"</td><td>"+lscore(x)+"%</td><td>"+lpill(x.status)+"</td><td>"+(function(){var t=lnext(x);return t?"<span class='"+(t.due<today?"late":"")+"'>"+esc(t.title)+"</span><div class='muted' style='font-size:13px'>"+fdate(t.due)+"</div>":"<span class='muted'>"+esc(lnx(x))+"</span>"})()+(x.status==="Qualified"?"<div><button class='btn' data-q='"+x.id+"'>Convert</button></div>":"")+"</td></tr>"}).join(""):"<tr><td colspan='7' class='empty'>"+(S.leads.length?"No leads match these filters.":"No leads yet. Add your first lead, import a list, or <a href='#' id='ls2'>load four sample leads</a>.")+"</td></tr>";
+var s2=$("#ls2");if(s2)s2.onclick=function(e){e.preventDefault();sampleLeads()}}
+$("#lq").oninput=function(){LF.q=this.value;rows()};$("#ls").onchange=function(){LF.st=this.value;rows()};$("#lr").onchange=function(){LF.src=this.value;rows()};$("#lo").onchange=function(){LF.own=this.value;rows()};$("#lv").onchange=function(){LF.arch=this.value;rows()};
+$("#la").onclick=function(){editLead()};$("#lall").onclick=function(){LF.own="";vLeads()};$("#lmy").onclick=function(){var m=owners.filter(function(o){return sess&&o&&sess.toLowerCase().indexOf(o.toLowerCase())===0})[0];LF.own=m||"";vLeads();if(!m)$("#lc").textContent="No reps match your sign-in name. Use the Owner filter."};$("#li").onclick=impLeads;
+$("#le").onclick=function(){dl("leads-"+today+".csv",csv([["First name","Last name","Company","Title","Email","Phone","Industry","Source","Owner","Status","Score","Tags","Added"]].concat(S.leads.map(function(l){return[l.first,l.last,l.company,l.title,l.email,l.phone,l.industry,l.source,l.owner,l.status,lscore(l)+"%",l.tags,l.created]}))))};
+$("#lrows").onclick=function(e){var q=e.target.closest("[data-q]");if(q){convLead(q.dataset.q);return}var t=e.target.closest("tr[data-id]");if(t)showLead(t.dataset.id)};
+$("#lrows").onkeydown=function(e){if(e.key==="Enter"){var t=e.target.closest("tr[data-id]");if(t)showLead(t.dataset.id)}};
+main.onclick=null;rows()}
+
+/* sample data */
+function sampleAll(){var R=["Ericson","Mara","Jon"],slug=function(s){return s.toLowerCase().replace(/[^a-z]/g,"")},mail=function(n,c){return n.toLowerCase().replace(/[^a-z]+/g,".").replace(/\.$/,"")+"@"+slug(c)+".example"},ph=function(i){return"+63 917 555 "+(100+i*17)};
+var CT=[["Maya Reyes","Harbor Coffee Co.","customer",0,"Referral","Partner Referral",40,3,38,1,"held"],["Daniel Cruz","Northwind Logistics","qualified",1,"LinkedIn","Q4 Payments Outreach",22,4,20,1,"booked"],["Priya Nair","Bluepine Studio","meeting",0,"Website","Webinar Oct",18,2,16,1,"held"],["Tomas Villanueva","Sunrise Dental","customer",2,"Outbound","Q4 Payments Outreach",35,5,33,1,"held"],["Elena Park","Granite Works","inactive",1,"Outbound","Q4 Payments Outreach",30,5,28,0,""],["Rafael Domingo","Kapitan Foods","qualified",2,"LinkedIn","Webinar Oct",12,3,10,1,"booked"],["Chloe Lim","Orbit Fintech","contacted",0,"Website","Webinar Oct",9,2,8,0,""],["Marcus Tan","Pacific Freight","new",1,"Referral","Partner Referral",3,0,null,0,""],["Aisha Karim","Crescent Retail","meeting",2,"LinkedIn","Q4 Payments Outreach",15,3,13,1,"booked"],["Noel Bautista","Luzon Steel","nurture",0,"Outbound","Q4 Payments Outreach",26,5,24,0,""],["Grace Ong","Lakeview Hotels","qualified",1,"Website","Webinar Oct",7,2,6,1,""],["Victor Salazar","Mabuhay Telecom","new",2,"Referral","Partner Referral",1,0,null,0,""]];
+var contacts=CT.map(function(r,i){return{id:"c"+i,name:r[0],company:r[1],email:mail(r[0],r[1]),phone:ph(i),status:r[2],owner:R[r[3]],source:r[4],campaign:r[5],created:day(-r[6]),attempts:r[7],firstContact:r[8]==null?"":day(-r[8]),responded:r[9],meeting:r[10],notes:"",qTask:1,qualified:["qualified","meeting","customer"].indexOf(r[2])>-1?1:0}});
+contacts[0].notes="Prefers email. Renews in March.";contacts[4].notes="Budget frozen until Q2.";contacts[2].notes="Asked about annual pricing.";
+var DL=[["Annual supply plan",0,18000,"Won",38,30],["Clinic booking system",3,12000,"Won",33,20],["Fleet tracking pilot",1,24000,"Meeting Scheduled",20],["Brand site rebuild",2,9500,"Proposal Sent",16],["Retail payments rollout",8,32000,"Negotiation",13],["Procurement platform",5,15000,"Qualified",10],["Hotel booking integration",10,21000,"Contacted",5],["Equipment contract",4,30000,"Lost",28,14,"No budget"],["Steel supply tender",9,14000,"Lost",24,12,"Chose a competitor"],["Intro workshop",2,3200,"Meeting Completed",14],["Checkout upgrade",6,8000,"New Lead",6]];
+var deals=DL.map(function(r,i){var d={id:"d"+i,title:r[0],contactId:"c"+r[1],value:r[2],stage:r[3],created:day(-r[4]),synced:r[3]};if(r[5]!=null){d.closed=day(-r[5]);if(r[3]==="Won")d.onb=1}if(r[6])d.lostReason=r[6];return d});
+var TK=[["Send proposal to Bluepine","proposal",1,"10:00","high",2,"pending"],["Call Daniel about pilot scope","call",-1,"14:00","high",1,"pending"],["Renewal check-in with Maya","email",12,"","low",0,"pending"],["Share case study with Tomas","email",-3,"","medium",3,"completed","Connected"],["Discovery call: Aisha","meeting",0,"15:30","high",8,"pending"],["LinkedIn follow-up: Chloe","linkedin",0,"09:30","medium",6,"progress"],["First contact: Marcus","call",0,"11:00","medium",7,"pending"],["Negotiation call: Crescent","call",2,"13:00","high",8,"pending"],["Send pricing to Rafael","email",-2,"","medium",5,"pending"],["Nurture email: Noel","email",7,"","low",9,"pending"],["Onboarding kickoff: Tomas","meeting",-10,"","medium",3,"completed","Meeting booked"]];
+var tasks=TK.map(function(r,i){var done=r[6]==="completed";return{id:"t"+i,title:r[0],type:r[1],due:day(r[2]),time:r[3],priority:r[4],rem:0,owner:contacts[r[5]].owner,contactId:"c"+r[5],done:done,status:r[6],desc:"",outcome:r[7]||"",completedAt:done?day(r[2]):""}});
+var LD=[["Sarah","Thompson","ExamplePay Ltd.","Head of Payments","LinkedIn","Qualified",0,8,3,"yes,yes,yes,yes,maybe,yes","Payments","enterprise, priority"],["Michael","Santos","GlobalTrade Inc.","CEO","Website","Assigned",1,1,0,"","Trade",""],["Emma","Johnson","Digital Commerce","Business Development Director","Referral","Contacted",2,6,1,"yes,maybe,maybe,","E-commerce",""],["David","Wilson","Fintech Solutions","Managing Director","Outbound","Meeting Booked",0,11,3,"yes,yes,yes,yes,yes,maybe","Fintech","hot"],["Lina","Aquino","Cebu Remit","Operations Head","LinkedIn","Engaged",1,5,2,"yes,yes,maybe,yes,,","Remittance",""],["Peter","Go","Manila Logistics Hub","COO","Outbound","Follow-up",2,9,2,"yes,maybe,yes,,,","Logistics",""],["Hannah","Reyes","PayWave Asia","Finance Director","Website","Disqualified",1,14,2,"no,yes,yes,yes,no,no","Payments",""],["Carlo","Mendoza","Sari-Sari Retail Group","Founder","Referral","Nurturing",0,20,5,"maybe,yes,yes,maybe,no,no","Retail","revisit Q1"],["Rafael","Domingo","Kapitan Foods","Procurement Head","LinkedIn","Converted",2,12,3,"yes,yes,yes,yes,yes,yes","Food and beverage",""],["Joel","Ramos","Tondo Shipping","Owner","Outbound","Unresponsive",2,25,5,"maybe,yes,,,,","Logistics",""],["Sarah","Thompson","ExamplePay Ltd.","Head of Payments","Website","New",0,0,0,"","Payments",""]];
+var leads=LD.map(function(r,i){var crit={},cs=r[9].split(",");["fit","industry","dm","need","budget","timeline"].forEach(function(k,j){if(cs[j])crit[k]=cs[j]});
+var acts=[{d:day(-r[7]),t:"Created",n:"Lead added from "+r[4]}];if(r[8])acts.unshift({d:day(-r[7]+2),t:"Call",n:r[5]==="Unresponsive"||r[5]==="Follow-up"?"No answer":"Connected"});if(["New","Assigned"].indexOf(r[5])<0)acts.unshift({d:day(-r[7]+3),t:"Status",n:"Status changed to "+r[5]});
+var l={id:"l"+i,first:r[0],last:r[1],company:r[2],title:r[3],email:mail(r[0]+" "+r[1],r[2]),phone:ph(i+20),industry:r[10],source:r[4],status:r[5],owner:R[r[6]],tags:r[11],notes:"",created:day(-r[7]),attempts:r[8],crit:crit,acts:acts,responded:["Engaged","Qualified","Meeting Booked","Converted"].indexOf(r[5])>-1?1:0,qualified:["Qualified","Meeting Booked","Converted"].indexOf(r[5])>-1?1:0};
+if(r[8])l.firstContact=day(-r[7]+2);if(r[5]==="Meeting Booked")l.meeting="booked";if(r[5]==="Disqualified")l.reason="No budget";if(r[5]==="Converted"){l.cid="c5";l.did="d5"}return l});
+S={contacts:contacts,deals:deals,tasks:tasks,leads:leads,pipeV:2,settings:{business:"SalesProCrm",currency:"USD",reps:R,maxAttempts:5,target:60000,schedule:{freq:"off",email:"",last:""},auto:{assign:1,qual:1,notify:1,meeting:1,onboard:1,nurture:1}},
+log:[{d:day(0),m:"Meeting booked for Aisha Karim. Status updated"},{d:day(-1),m:"Notified Mara: Call Daniel about pilot scope"},{d:day(-2),m:"Lead Rafael Domingo converted. Opportunity created"},{d:day(-3),m:"Noel Bautista had no response after 5 attempts. Moved to nurture"}],
+notices:[{id:"n1",m:"Follow-up due for Mara: Call Daniel about pilot scope",d:day(-1)},{id:"n2",m:"Possible duplicate lead: Sarah Thompson",d:day(0)}]}}
+/* router */
+var V={overview:vDash,leads:vLeads,contacts:vContacts,pipeline:vPipeline,tasks:vTasks,reports:vReports,settings:vSettings};
+function route(){
+if(!authed())return;sweep();$("#bname").textContent=S.settings.business||"SalesProCrm";var h=(location.hash||"#leads").slice(1);if(!V[h])h="leads";
+document.querySelectorAll("nav a[data-v]").forEach(function(a){a.classList.toggle("on",a.dataset.v===h)});
+V[h]()}
+window.addEventListener("hashchange",route);
+/* auth (front-end only) */
+var USERS=[{u:"ericson1981",p:"1q2w3e4r5t"}],SKEY="ledgerline.session",sess=null;
+function authed(){try{sess=localStorage.getItem(SKEY)||sess}catch(e){}return!!sess}
+function gate(){var a=authed();$("#login").hidden=a;$("#app").hidden=!a;if(a){$("#who").textContent="Signed in as "+sess;route()}else{$("#lu").focus()}}
+$("#lform").onsubmit=function(e){e.preventDefault();var u=$("#lu").value.trim(),p=$("#lp").value;
+var m=USERS.filter(function(x){return x.u===u&&x.p===p})[0];
+if(m){sess=m.u;try{localStorage.setItem(SKEY,m.u)}catch(x){}$("#lerr").textContent="";$("#lp").value="";gate()}
+else{$("#lerr").textContent="Username or password is incorrect. Check them and try again."}};
+$("#demo").onclick=function(){$("#lu").value="ericson1981";$("#lp").value="1q2w3e4r5t";$("#lerr").textContent=""};
+$("#show").onchange=function(){$("#lp").type=this.checked?"text":"password"};
+$("#signout").onclick=function(e){e.preventDefault();sess=null;try{localStorage.removeItem(SKEY)}catch(x){}location.hash="";gate()};
+load();gate();
+})();
+</script>
+</body>
+</html>
