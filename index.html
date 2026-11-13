@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LeadGen Connect</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f4f3;--panel:#fff;--ink:#17262b;--mute:#5d6e73;--line:#dbe3e1;--acc:#0f766e;--accbg:#d9f0ec;--warn:#b86e00;--warnbg:#fbeccd;--bad:#b4402f;--badbg:#f8dcd6;--ok:#1f7a3d;--okbg:#d8f0de;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10191c;--panel:#18262a;--ink:#e6efed;--mute:#93a7ab;--line:#2b3d42;--acc:#4fd1c0;--accbg:#173a38;--warn:#f0b34a;--warnbg:#3b2d12;--bad:#f08a78;--badbg:#42211b;--ok:#78d894;--okbg:#17361f}}
+:root[data-theme="dark"]{--bg:#10191c;--panel:#18262a;--ink:#e6efed;--mute:#93a7ab;--line:#2b3d42;--acc:#4fd1c0;--accbg:#173a38;--warn:#f0b34a;--warnbg:#3b2d12;--bad:#f08a78;--badbg:#42211b;--ok:#78d894;--okbg:#17361f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Instrument Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;margin:0;letter-spacing:-.01em}
+h1{font-size:26px}h2{font-size:18px}h3{font-size:15px}
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+nav{background:var(--panel);border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
+.logo{font:700 18px "Bricolage Grotesque",sans-serif;padding:4px 10px 16px}.logo small{display:block;font:400 12px "Instrument Sans";color:var(--mute)}
+nav button{all:unset;cursor:pointer;padding:9px 12px;border-radius:8px;color:var(--mute);font-weight:500}
+nav button:hover{background:var(--bg)}nav button.on{background:var(--accbg);color:var(--acc)}
+nav button:focus-visible,.btn:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.who{margin-top:auto;padding:10px;border-top:1px solid var(--line);font-size:13px;color:var(--mute)}
+main{padding:24px 28px;max-width:1200px;width:100%}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.top p{margin:2px 0 0;color:var(--mute)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{all:unset;cursor:pointer;padding:6px 12px;font-size:13px;color:var(--mute)}.seg button.on{background:var(--ink);color:var(--bg)}
+.grid{display:grid;gap:14px}.k4{grid-template-columns:repeat(4,1fr)}.k2{grid-template-columns:2fr 1fr}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.kpi b{display:block;font:700 30px "Bricolage Grotesque";margin-top:2px}.kpi span{color:var(--mute);font-size:13px}
+.kpi.hero{background:var(--acc);color:#fff;border:0}.kpi.hero span{color:#d5f2ee}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600}
+.hi{background:var(--okbg);color:var(--ok)}.pot{background:var(--accbg);color:var(--acc)}.lo{background:var(--warnbg);color:var(--warn)}.po{background:var(--badbg);color:var(--bad)}
+table{width:100%;border-collapse:collapse}th{text-align:left;font-weight:500;color:var(--mute);font-size:13px;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}tr.row{cursor:pointer}tr.row:hover td{background:var(--bg)}
+.scroll{overflow-x:auto}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}.bar i{display:block;height:100%;background:var(--acc)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+select,input{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);min-width:0}
+.btn{all:unset;cursor:pointer;background:var(--acc);color:#fff;padding:8px 14px;border-radius:8px;font-weight:600;text-align:center}
+.btn.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.kan{display:grid;grid-template-columns:repeat(5,minmax(190px,1fr));gap:12px;overflow-x:auto;padding-bottom:8px}
+.col{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;min-height:300px}
+.col.over{outline:2px dashed var(--acc)}
+.col h3{display:flex;justify-content:space-between;margin-bottom:8px}.col h3 span{color:var(--mute);font:500 13px "Instrument Sans"}
+.lc{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px;margin-bottom:8px;cursor:grab;font-size:13px}
+.lc b{display:block;font-size:14px}.lc small{color:var(--mute)}
+.drawer{position:fixed;inset:0 0 0 auto;width:min(440px,100%);background:var(--panel);border-left:1px solid var(--line);padding:22px;padding-top:calc(22px + env(safe-area-inset-top,0px));overflow:auto;transform:translateX(105%);transition:transform .2s;z-index:20;box-shadow:-8px 0 30px rgba(0,0,0,.12)}
+.drawer.open{transform:none}
+.crit{display:grid;grid-template-columns:130px 1fr 52px;gap:8px;align-items:center;font-size:13px;margin:7px 0}
+.note{font-size:13px;color:var(--mute)}.miss{color:var(--warn)}
+.row2{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
+@media(max-width:820px){.app{grid-template-columns:1fr}nav{position:static;height:auto;flex-direction:row;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--line)}.logo{width:100%;padding-bottom:6px}.who{display:none}main{padding:16px}.k4{grid-template-columns:1fr 1fr}.k2{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.auth{min-height:100vh;display:grid;place-items:center;padding:20px}.auth .card{width:min(400px,100%)}.auth label{display:block;margin:12px 0 4px;font-size:13px;color:var(--mute)}.auth input,.auth select{width:100%}.auth .btn{display:block;margin-top:16px}.err{color:var(--bad);font-size:13px;margin-top:10px;min-height:18px}
+</style></head><body>
+<div id="auth" class="auth"></div><div class="app" id="app" style="display:none"><nav id="nav"></nav><main id="main"></main></div>
+<aside class="drawer" id="drawer" aria-label="Lead details"></aside><div class="toast" id="toast"></div>
+<script>
+const W={title:25,industry:25,size:20,geo:15,signals:15};
+const STAGES=["New lead","Qualified","Meeting booked","Opportunity","Won / Lost"];
+const SDRS=["Maria Santos","Jon Reyes","Aisha Khan"];
+const first=["Priya","Liam","Sophie","Jack","Mia","Noah","Chloe","Ethan","Zoe","Oscar","Grace","Lucas","Ruby","Henry","Ella"],last=["Nguyen","Smith","Patel","Brown","Wilson","Taylor","Martin","Lee","Walker","Evans"];
+const titles=["Practice Manager","Clinic Owner","Office Manager","Dentist (Associate)","Dental Assistant","Receptionist"];
+const tpts={"Practice Manager":25,"Clinic Owner":25,"Office Manager":16,"Dentist (Associate)":9,"Dental Assistant":4,"Receptionist":4};
+const cos=["Bondi Smiles","Harbour Dental","Southbank Dental Care","Gold Coast Family Dental","Perth Bright Smiles","Adelaide Dental Studio","Canberra Dental Group","Hobart Dental","Newcastle Smile Co","Darwin Dental Clinic","Fitzroy Dental","Manly Dental","Cairns Dental Care","Geelong Smiles","Brisbane Dental Hub","Surry Hills Dental","Ballarat Dental","Wollongong Dental","Toowoomba Dental","Parramatta Dental"];
+const places=[["Sydney","AU"],["Melbourne","AU"],["Brisbane","AU"],["Perth","AU"],["Adelaide","AU"],["Auckland","NZ"],["Singapore","SG"]];
+const inds=["Dental","Dental","Dental","Dental","Medical","Veterinary"];
+let seed=7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280,pick=a=>a[Math.floor(rnd()*a.length)];
+const L=[];for(let i=0;i<36;i++){const p=pick(places);const sizes=[3,8,12,20,35,48,70,120,null];
+L.push({id:i+1,name:pick(first)+" "+pick(last),title:pick(titles),company:cos[i%cos.length],industry:rnd()<.1?null:pick(inds),size:pick(sizes),city:p[0],country:p[1],signals:Math.floor(rnd()*4),stage:["New lead","New lead","New lead","Qualified","Meeting booked","Opportunity"][Math.floor(rnd()*6)],owner:SDRS[i%3],url:"linkedin.com/in/demo-"+(i+1),notes:[]})}
+function score(l){const c=[],m=[];
+const t=tpts[l.title]??0;c.push(["Job title",t,W.title,"verified"]);
+let ind=l.industry==="Dental"?25:l.industry==="Medical"?12:l.industry==="Veterinary"?6:0;if(!l.industry)m.push("industry");c.push(["Industry",ind,W.industry,l.industry?"verified":"missing"]);
+let s=0;if(l.size==null)m.push("company size");else s=l.size>=5&&l.size<=50?20:l.size>50&&l.size<=100?10:l.size<5?8:4;c.push(["Company size",s,W.size,l.size==null?"missing":"verified"]);
+const g=l.country==="AU"?15:l.country==="NZ"?6:0;c.push(["Location",g,W.geo,"verified"]);
+const sg=Math.min(15,l.signals*5);c.push(["Buying signals",sg,W.signals,l.signals?"reported":"none found"]);
+const total=c.reduce((a,x)=>a+x[1],0);return{total,c,m}}
+const cls=s=>s>=80?["High fit","hi","Prioritize"]:s>=60?["Potential fit","pot","Research further"]:s>=40?["Low fit","lo","Review manually"]:["Poor fit","po","Disqualify or archive"];
+let view="Dashboard",role="Manager",me=SDRS[0];
+const views=["Dashboard","Lead discovery","Lead database","Pipeline","Team","Reports"];
+const $=id=>document.getElementById(id);
+const mine=()=>role==="SDR"?L.filter(l=>l.owner===me):L;
+function toast(t){const e=$("toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),1800)}
+function nav(){$("nav").innerHTML=`<div class="logo">LeadGen Connect<small>Sales intelligence</small></div>`+views.filter(v=>!(role==="SDR"&&v==="Team")).map(v=>`<button class="${v===view?"on":""}" onclick="go('${v}')">${v}</button>`).join("")+`<div class="who"><div class="seg"><button class="${role==="SDR"?"on":""}" onclick="setRole('SDR')">SDR</button><button class="${role==="Manager"?"on":""}" onclick="setRole('Manager')">Manager</button></div><p>${esc(user?user.name:"")} (${role})<br>Demo data only</p><button class="btn ghost" style="width:100%" onclick="logout()">Log out</button></div>`}
+function go(v){view=v;render()}function setRole(r){role=r;if(r==="SDR"&&view==="Team")view="Dashboard";render()}
+function head(t,s,extra=""){return`<div class="top"><div><h1>${t}</h1><p>${s}</p></div>${extra}</div>`}
+function pill(sc){const c=cls(sc);return`<span class="tag ${c[1]}">${sc} · ${c[0]}</span>`}
+function render(){nav();const f={Dashboard:dash,"Lead discovery":disc,"Lead database":db,Pipeline:pipe,Team:team,Reports:rep}[view];$("main").innerHTML=f();if(view==="Pipeline")dnd();if(view==="Lead database")fil()}
+function dash(){const a=mine(),sc=a.map(l=>score(l).total),q=sc.filter(x=>x>=60).length,hi=sc.filter(x=>x>=80).length,mt=a.filter(l=>["Meeting booked","Opportunity","Won / Lost"].includes(l.stage)).length;
+const top=a.map(l=>({l,s:score(l).total})).sort((x,y)=>y.s-x.s).slice(0,6);
+return head(role==="SDR"?"My workspace":"Team dashboard","Find the right prospect, qualify, start conversations, book meetings.")+
+`<div class="grid k4"><div class="card kpi hero"><span>Leads discovered</span><b>${a.length}</b></div><div class="card kpi"><span>Qualified (60+)</span><b>${q}</b></div><div class="card kpi"><span>High fit (80+)</span><b>${hi}</b></div><div class="card kpi"><span>Meetings booked</span><b>${mt}</b></div></div>
+<div class="grid k2" style="margin-top:14px"><div class="card"><h2>Next best prospects</h2><div class="scroll"><table><tr><th>Lead</th><th>Company</th><th>Score</th><th>Action</th></tr>${top.map(x=>`<tr class="row" onclick="openLead(${x.l.id})"><td>${x.l.name}<br><span class="note">${x.l.title}</span></td><td>${x.l.company}</td><td>${pill(x.s)}</td><td>${cls(x.s)[2]}</td></tr>`).join("")}</table></div></div>
+<div class="card"><h2>Pipeline</h2>${STAGES.map(s=>{const n=a.filter(l=>l.stage===s).length;return`<div style="margin:12px 0"><div class="row2" style="justify-content:space-between"><span>${s}</span><b>${n}</b></div><div class="bar"><i style="width:${n/Math.max(1,a.length)*100}%"></i></div></div>`}).join("")}</div></div>`}
+let found=null;
+function disc(){return head("Lead discovery","Define your ideal customer, then pull in authorized prospects.")+
+`<div class="card"><h2>Ideal customer profile</h2><div class="filters" style="margin-top:10px"><select id="dt"><option value="">Any title</option><option>Practice Manager</option><option>Clinic Owner</option><option>Office Manager</option></select><select id="di"><option value="">Any industry</option><option>Dental</option><option>Medical</option><option>Veterinary</option></select><select id="dc"><option value="">Any country</option><option>AU</option><option>NZ</option><option>SG</option></select><select id="ds"><option value="">Any size</option><option value="s">5–50 staff</option><option value="l">51+ staff</option></select><button class="btn" onclick="runDisc()">Search prospects</button></div>
+<p class="note">Prospects come from your imported records and approved sources. LeadGen Connect does not scrape LinkedIn or send automated requests.</p></div>
+<div class="card" style="margin-top:14px"><h2>Add a LinkedIn profile</h2><div class="filters" style="margin-top:10px"><input id="lu" placeholder="linkedin.com/in/…" style="flex:1;min-width:220px"><input id="ln" placeholder="Name"><button class="btn ghost" onclick="addUrl()">Add to database</button></div><p class="note">Fields you don't enter stay marked as missing and score 0 until verified.</p></div>
+<div id="dres" style="margin-top:14px">${found?resTable(found):""}</div>`}
+function resTable(r){return`<div class="card"><h2>${r.length} matching prospects</h2><div class="scroll"><table><tr><th>Lead</th><th>Company</th><th>Location</th><th>Score</th></tr>${r.map(l=>`<tr class="row" onclick="openLead(${l.id})"><td>${l.name}<br><span class="note">${l.title}</span></td><td>${l.company}</td><td>${l.city}, ${l.country}</td><td>${pill(score(l).total)}</td></tr>`).join("")}</table></div></div>`}
+function runDisc(){const t=$("dt").value,i=$("di").value,c=$("dc").value,s=$("ds").value;found=mine().filter(l=>(!t||l.title===t)&&(!i||l.industry===i)&&(!c||l.country===c)&&(!s||(s==="s"?l.size>=5&&l.size<=50:l.size>50))).sort((a,b)=>score(b).total-score(a).total);$("dres").innerHTML=resTable(found)}
+function addUrl(){const u=$("lu").value.trim(),n=$("ln").value.trim()||"Unnamed prospect";if(!/linkedin\.com\/in\//i.test(u))return toast("Enter a linkedin.com/in/ profile URL");
+L.unshift({id:Date.now(),name:n,title:"Unknown",company:"Unknown",industry:null,size:null,city:"—",country:"—",signals:0,stage:"New lead",owner:role==="SDR"?me:SDRS[0],url:u.replace(/^https?:\/\//,""),notes:[]});toast("Added. Score is low until details are verified.");$("lu").value="";$("ln").value="";runDisc()}
+function db(){return head("Lead database",`${mine().length} leads`)+`<div class="filters"><input id="fq" placeholder="Search name or company" oninput="fil()"><select id="ff" onchange="fil()"><option value="">All classes</option><option>High fit</option><option>Potential fit</option><option>Low fit</option><option>Poor fit</option></select><select id="fs" onchange="fil()"><option value="">All stages</option>${STAGES.map(s=>`<option>${s}</option>`).join("")}</select>${role==="Manager"?`<select id="fo" onchange="fil()"><option value="">All owners</option>${SDRS.map(s=>`<option>${s}</option>`).join("")}</select>`:""}</div><div class="card scroll" id="dbt"></div>`}
+function fil(){const q=($("fq").value||"").toLowerCase(),f=$("ff").value,s=$("fs").value,o=$("fo")?$("fo").value:"";
+const r=mine().filter(l=>(!q||(l.name+l.company).toLowerCase().includes(q))&&(!s||l.stage===s)&&(!o||l.owner===o)&&(!f||cls(score(l).total)[0]===f)).sort((a,b)=>score(b).total-score(a).total);
+$("dbt").innerHTML=`<table><tr><th>Lead</th><th>Company</th><th>Stage</th><th>Owner</th><th>Score</th></tr>${r.map(l=>`<tr class="row" onclick="openLead(${l.id})"><td>${l.name}<br><span class="note">${l.title}</span></td><td>${l.company}</td><td>${l.stage}</td><td>${l.owner}</td><td>${pill(score(l).total)}</td></tr>`).join("")||`<tr><td colspan=5 class="note">No leads match these filters. Clear a filter to see more.</td></tr>`}</table>`}
+function pipe(){return head("Sales pipeline","Drag a lead card to move it to another stage.")+`<div class="kan">${STAGES.map(s=>{const a=mine().filter(l=>l.stage===s);return`<div class="col" data-s="${s}"><h3>${s}<span>${a.length}</span></h3>${a.map(l=>`<div class="lc" draggable="true" data-id="${l.id}" onclick="openLead(${l.id})"><b>${l.name}</b>${l.company}<br><small>${score(l).total} pts · ${l.owner.split(" ")[0]}</small></div>`).join("")}</div>`}).join("")}</div>`}
+function dnd(){let d=null;document.querySelectorAll(".lc").forEach(e=>{e.ondragstart=()=>d=+e.dataset.id});document.querySelectorAll(".col").forEach(c=>{c.ondragover=e=>{e.preventDefault();c.classList.add("over")};c.ondragleave=()=>c.classList.remove("over");c.ondrop=e=>{e.preventDefault();const l=L.find(x=>x.id===d);if(l){l.stage=c.dataset.s;toast(l.name+" moved to "+l.stage);render()}}})}
+function team(){return head("Team management","Assign leads and review activity.")+`<div class="card scroll"><table><tr><th>SDR</th><th>Leads</th><th>High fit</th><th>Meetings</th><th>Target</th></tr>${SDRS.map(s=>{const a=L.filter(l=>l.owner===s),m=a.filter(l=>["Meeting booked","Opportunity","Won / Lost"].includes(l.stage)).length;return`<tr><td>${s}</td><td>${a.length}</td><td>${a.filter(l=>score(l).total>=80).length}</td><td>${m}</td><td style="min-width:140px"><div class="bar"><i style="width:${Math.min(100,m/6*100)}%"></i></div><span class="note">${m} of 6 meetings</span></td></tr>`}).join("")}</table></div>
+<div class="card" style="margin-top:14px"><h2>Assign high-fit leads</h2><p class="note">Reassign any lead from its detail panel. Unassigned prospects with 80+ scores:</p><div class="row2"><button class="btn" onclick="rebalance()">Rebalance top leads across SDRs</button></div></div>`}
+function rebalance(){L.filter(l=>score(l).total>=80).forEach((l,i)=>l.owner=SDRS[i%3]);toast("High-fit leads spread evenly");render()}
+function rep(){const ss=L.map(l=>score(l).total),cl=["High fit","Potential fit","Low fit","Poor fit"].map(c=>[c,L.filter(l=>cls(score(l).total)[0]===c).length]);
+const f=STAGES.map(s=>[s,L.filter(l=>STAGES.indexOf(l.stage)>=STAGES.indexOf(s)).length]);
+return head("Reports & analytics","Campaign: Australian dental clinics. Illustrative demo data.")+`<div class="grid k2"><div class="card"><h2>Qualification mix</h2>${cl.map(x=>`<div style="margin:12px 0"><div class="row2" style="justify-content:space-between"><span>${x[0]}</span><b>${x[1]}</b></div><div class="bar"><i style="width:${x[1]/L.length*100}%"></i></div></div>`).join("")}<p class="note">Average score ${Math.round(ss.reduce((a,b)=>a+b,0)/ss.length)}</p></div>
+<div class="card"><h2>Lead-to-meeting conversion</h2>${f.slice(0,4).map(x=>`<div style="margin:12px 0"><div class="row2" style="justify-content:space-between"><span>Reached ${x[0]}</span><b>${Math.round(x[1]/L.length*100)}%</b></div><div class="bar"><i style="width:${x[1]/L.length*100}%"></i></div></div>`).join("")}</div></div>`}
+function openLead(id){const l=L.find(x=>x.id===id),s=score(l),c=cls(s.total);
+$("drawer").innerHTML=`<div class="row2" style="justify-content:space-between"><h2>${l.name}</h2><button class="btn ghost" onclick="closeD()" aria-label="Close">Close</button></div><p class="note">${l.title} · ${l.company}<br>${l.city}, ${l.country} · ${l.url}</p>
+<div style="margin:14px 0">${pill(s.total)}</div><h3>AI qualification</h3>${s.c.map(x=>`<div class="crit"><span>${x[0]}</span><div class="bar"><i style="width:${x[1]/x[2]*100}%"></i></div><span>${x[1]}/${x[2]}</span></div>`).join("")}
+<p class="note ${s.m.length?"miss":""}">${s.m.length?"Missing: "+s.m.join(", ")+". Missing data scores 0 and is not assumed to be a match.":"All scored fields are filled in."}</p>
+<p><b>Recommended action:</b> ${c[2]}. ${s.total>=80?"Strong role and company match; reach out this week.":s.total>=60?"Good potential. Confirm company size and buying signals first.":s.total>=40?"Partial match. A person should review before outreach.":"Unlikely to match this campaign."}</p>
+<div class="filters"><label>Stage<br><select onchange="upd(${id},'stage',this.value)">${STAGES.map(x=>`<option ${x===l.stage?"selected":""}>${x}</option>`).join("")}</select></label>${role==="Manager"?`<label>Owner<br><select onchange="upd(${id},'owner',this.value)">${SDRS.map(x=>`<option ${x===l.owner?"selected":""}>${x}</option>`).join("")}</select></label>`:""}</div>
+<div class="row2"><button class="btn" onclick="rerun(${id})">Run AI qualification</button></div>
+<h3 style="margin-top:18px">Activity</h3><div class="row2"><input id="an" placeholder="Log a call, email, or note" style="flex:1"><button class="btn ghost" onclick="addNote(${id})">Add</button></div><ul>${l.notes.map(n=>`<li>${n}</li>`).join("")||`<li class="note">No activity yet. Log your first touch.</li>`}</ul>`;
+$("drawer").classList.add("open")}
+function closeD(){$("drawer").classList.remove("open")}
+function upd(id,k,v){L.find(x=>x.id===id)[k]=v;toast("Updated "+k);render()}
+function rerun(id){const l=L.find(x=>x.id===id);if(l.signals<3&&l.industry)l.signals++;toast("Qualification refreshed");openLead(id);render()}
+function addNote(id){const v=$("an").value.trim();if(!v)return;L.find(x=>x.id===id).notes.unshift(new Date().toLocaleDateString()+": "+v);openLead(id)}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeD()});
+const accts=[{u:"demo",p:"demo1234",name:"Demo User",role:"Manager"}];let user=null,amode="in";
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function authUI(){const a=$("auth");a.style.display="grid";$("app").style.display="none";
+const tabs=`<div class="seg" style="margin:12px 0"><button type="button" class="${amode==="in"?"on":""}" onclick="amode='in';authUI()">Log in</button><button type="button" class="${amode==="up"?"on":""}" onclick="amode='up';authUI()">Sign up</button></div>`;
+a.innerHTML=`<div class="card"><div class="logo" style="padding:0">LeadGen Connect<small>Sales intelligence</small></div>${tabs}<form onsubmit="return authGo(event)">${amode==="up"?`<label for="an1">Your name</label><input id="an1" autocomplete="name">`:""}<label for="au">Username</label><input id="au" autocomplete="username"><label for="ap">Password</label><input id="ap" type="password" autocomplete="current-password">${amode==="up"?`<label for="ar">Role</label><select id="ar"><option>SDR</option><option>Manager</option></select>`:""}<button class="btn" style="width:100%" type="submit">${amode==="in"?"Log in":"Create account"}</button><div class="err" id="aerr"></div></form>${amode==="in"?`<div style="margin-top:16px;padding:12px;border:1px dashed var(--line);border-radius:8px"><b>Demo account</b><br><span class="note">Username: demo<br>Password: demo1234</span><button type="button" class="btn ghost" style="width:100%;margin-top:10px" onclick="fillDemo()">Fill in demo login</button></div>`:""}<p class="note">Demo only. Accounts live in this page and reset on refresh. Don't use a real password.</p></div>`}
+function authGo(e){e.preventDefault();const u=$("au").value.trim().toLowerCase(),p=$("ap").value,err=$("aerr");
+if(amode==="in"){const x=accts.find(a=>a.u===u&&a.p===p);if(!x){err.textContent="Username or password is incorrect. Check both and try again.";return false}enter(x)}
+else{const n=$("an1").value.trim();if(!n||u.length<3||p.length<6){err.textContent="Enter your name, a username (3+ characters) and a password (6+ characters).";return false}
+if(accts.some(a=>a.u===u)){err.textContent="That username is taken. Choose another.";return false}
+const x={u,p,name:n,role:$("ar").value};accts.push(x);enter(x)}return false}
+function enter(x){user=x;role=x.role;view="Dashboard";$("auth").style.display="none";$("app").style.display="grid";render();toast("Welcome, "+x.name)}
+function fillDemo(){$("au").value="demo";$("ap").value="demo1234";$("aerr").textContent=""}
+function logout(){user=null;closeD();amode="in";authUI()}
+authUI();
+</script></body></html>
